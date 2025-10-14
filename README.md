@@ -19,7 +19,17 @@ Whether you're developing chatbots, content generators, or complex AI-driven wor
 
 ## 📦 Installation
 
-Get started with `puter-python-sdk` in a few simple steps.
+Get started with `puter-python-sdk` in just one command!
+
+### Quick Install (Recommended)
+
+```bash
+pip install puter-python-sdk
+```
+
+### Development Installation
+
+If you want to contribute or modify the code:
 
 1.  **Clone the Repository**:
 

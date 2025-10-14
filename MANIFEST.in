@@ -1,0 +1,6 @@
+include README.md
+include license.md
+include requirements.txt
+recursive-include puter *.json
+global-exclude __pycache__
+global-exclude *.py[co]
