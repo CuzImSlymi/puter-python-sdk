@@ -1,6 +1,6 @@
 # puter-python-sdk
 
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/puter-python-sdk) ![PyPI](https://img.shields.io/pypi/v/puter-python-sdk) ![License](https://img.shields.io/github/license/CuzImSlymi/puter-python-sdk)
+![Python](https://img.shields.io/badge/python-3.7+-blue.svg) ![License](https://img.shields.io/github/license/CuzImSlymi/puter-python-sdk) ![GitHub stars](https://img.shields.io/github/stars/CuzImSlymi/puter-python-sdk?style=social)
 
 ## 🚀 A Powerful Python SDK for Puter.js AI
 
