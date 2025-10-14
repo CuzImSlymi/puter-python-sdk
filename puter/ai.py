@@ -1,18 +1,25 @@
 import json
 import os
+import asyncio
+import time
+from typing import Any, Dict, List, Optional, Union
 import requests
-from typing import Any, Dict, List, Optional
+import aiohttp
+from asyncio_throttle import Throttler
 
 from .exceptions import PuterAuthError, PuterAPIError
+from .config import config
 
 class PuterAI:
     """
     Client for interacting with Puter.js AI models.
 
     This class handles authentication, model selection, and chat interactions
-    with the Puter.js AI API.
+    with the Puter.js AI API with enhanced features like retry logic, rate limiting,
+    and async support.
     """
-    def __init__(self, username: Optional[str] = None, password: Optional[str] = None, token: Optional[str] = None):
+    def __init__(self, username: Optional[str] = None, password: Optional[str] = None, 
+                 token: Optional[str] = None, **config_overrides):
         """
         Initializes the PuterAI client.
 
@@ -20,28 +27,102 @@ class PuterAI:
             username (Optional[str]): Your Puter.js username.
             password (Optional[str]): Your Puter.js password.
             token (Optional[str]): An existing authentication token. If provided, username and password are not needed.
+            **config_overrides: Override default configuration values.
         """
         self._token = token
-        self._api_base = "https://api.puter.com"
-        self._login_url = "https://puter.com/login"
-        self._headers = {
-            "Accept": "*/*",
-            "Accept-Language": "en-US,en;q=0.9",
-            "Connection": "keep-alive",
-            "Origin": "https://puter.com",
-            "Referer": "https://puter.com/",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-        }
         self._username = username
         self._password = password
         self.chat_history = []
-        self.current_model = "claude-opus-4" # default model
+        self.current_model = "claude-opus-4"  # default model
+        
+        # Apply configuration overrides
+        if config_overrides:
+            config.update(**config_overrides)
+        
+        # Rate limiting setup
+        self._throttler = Throttler(
+            rate_limit=config.rate_limit_requests,
+            period=config.rate_limit_period
+        )
         
         # Get the path to the available_models.json file relative to this module
         current_dir = os.path.dirname(__file__)
         models_file = os.path.join(current_dir, 'available_models.json')
         with open(models_file, 'r') as f:
             self.available_models = json.load(f)
+
+    def _retry_request(self, request_func, *args, **kwargs):
+        """
+        Execute a request with retry logic and exponential backoff.
+        
+        Args:
+            request_func: The function to execute (requests.post, requests.get, etc.)
+            *args, **kwargs: Arguments to pass to the request function
+            
+        Returns:
+            The response from the request
+            
+        Raises:
+            PuterAPIError: If all retries are exhausted
+        """
+        last_exception = None
+        
+        for attempt in range(config.max_retries + 1):
+            try:
+                if 'timeout' not in kwargs:
+                    kwargs['timeout'] = config.timeout
+                    
+                response = request_func(*args, **kwargs)
+                response.raise_for_status()
+                return response
+                
+            except requests.RequestException as e:
+                last_exception = e
+                if attempt < config.max_retries:
+                    delay = config.retry_delay * (config.backoff_factor ** attempt)
+                    time.sleep(delay)
+                    continue
+                break
+        
+        raise PuterAPIError(f"Request failed after {config.max_retries + 1} attempts: {last_exception}")
+
+    async def _async_retry_request(self, session: aiohttp.ClientSession, method: str, url: str, **kwargs):
+        """
+        Execute an async request with retry logic and exponential backoff.
+        
+        Args:
+            session: The aiohttp session
+            method: HTTP method (GET, POST, etc.)
+            url: The URL to request
+            **kwargs: Additional arguments for the request
+            
+        Returns:
+            The response from the request
+            
+        Raises:
+            PuterAPIError: If all retries are exhausted
+        """
+        last_exception = None
+        
+        for attempt in range(config.max_retries + 1):
+            try:
+                if 'timeout' not in kwargs:
+                    timeout = aiohttp.ClientTimeout(total=config.timeout)
+                    kwargs['timeout'] = timeout
+                
+                async with session.request(method, url, **kwargs) as response:
+                    response.raise_for_status()
+                    return await response.json()
+                    
+            except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+                last_exception = e
+                if attempt < config.max_retries:
+                    delay = config.retry_delay * (config.backoff_factor ** attempt)
+                    await asyncio.sleep(delay)
+                    continue
+                break
+        
+        raise PuterAPIError(f"Async request failed after {config.max_retries + 1} attempts: {last_exception}")
 
     def login(self) -> bool:
         """
@@ -58,16 +139,52 @@ class PuterAI:
 
         payload = {"username": self._username, "password": self._password}
         try:
-            response = requests.post(self._login_url, headers=self._headers, json=payload)
-            response.raise_for_status()
+            response = self._retry_request(
+                requests.post, 
+                config.login_url, 
+                headers=config.headers, 
+                json=payload
+            )
             data = response.json()
             if data.get("proceed"):
                 self._token = data["token"]
                 return True
             else:
                 raise PuterAuthError("Login failed. Please check your credentials.")
-        except requests.RequestException as e:
+        except (requests.RequestException, PuterAPIError) as e:
             raise PuterAuthError(f"Login error: {e}")
+
+    async def async_login(self) -> bool:
+        """
+        Async version of login method.
+        
+        Raises:
+            PuterAuthError: If username or password are not set, or if login fails.
+
+        Returns:
+            bool: True if login is successful, False otherwise.
+        """
+        if not self._username or not self._password:
+            raise PuterAuthError("Username and password must be set for login.")
+
+        payload = {"username": self._username, "password": self._password}
+        try:
+            async with self._throttler:
+                async with aiohttp.ClientSession() as session:
+                    data = await self._async_retry_request(
+                        session, 
+                        "POST", 
+                        config.login_url,
+                        headers=config.headers,
+                        json=payload
+                    )
+                    if data.get("proceed"):
+                        self._token = data["token"]
+                        return True
+                    else:
+                        raise PuterAuthError("Login failed. Please check your credentials.")
+        except (aiohttp.ClientError, PuterAPIError) as e:
+            raise PuterAuthError(f"Async login error: {e}")
 
     def _get_auth_headers(self) -> Dict[str, str]:
         """
@@ -82,7 +199,7 @@ class PuterAI:
         if not self._token:
             raise PuterAuthError("Not authenticated. Please login first.")
         return {
-            **self._headers,
+            **config.headers,
             "Authorization": f"Bearer {self._token}",
             "Content-Type": "application/json",
         }
@@ -140,13 +257,13 @@ class PuterAI:
 
         headers = self._get_auth_headers()
         try:
-            response = requests.post(
-                f"{self._api_base}/drivers/call",
+            response = self._retry_request(
+                requests.post,
+                f"{config.api_base}/drivers/call",
                 json=payload,
                 headers=headers,
                 stream=False,
             )
-            response.raise_for_status()
             response_data = response.json()
             
             # More robust response parsing with detailed debugging
@@ -219,8 +336,122 @@ class PuterAI:
                     "response_preview": str(response_data)[:200] + "..." if len(str(response_data)) > 200 else str(response_data)
                 }
                 return f"No content in AI response. Debug: {json.dumps(debug_info, indent=2)}"
-        except requests.RequestException as e:
+        except (requests.RequestException, PuterAPIError) as e:
             raise PuterAPIError(f"AI chat error: {e}")
+
+    async def async_chat(self, prompt: str, model: Optional[str] = None) -> str:
+        """
+        Async version of chat method. Sends a chat message to the AI model and returns its response.
+
+        The conversation history is automatically managed.
+
+        Args:
+            prompt (str): The user's message.
+            model (Optional[str]): The model to use for this specific chat. Defaults to current_model.
+
+        Raises:
+            PuterAPIError: If the API call fails.
+
+        Returns:
+            str: The AI's response as a string.
+        """
+        if model is None:
+            model = self.current_model
+
+        messages = self.chat_history + [{"role": "user", "content": prompt}]
+        driver = self._get_driver_for_model(model)
+
+        args = {
+            "messages": messages,
+            "model": model,
+            "stream": False,
+            "max_tokens": 4096,
+            "temperature": 0.7,
+        }
+
+        payload = {
+            "interface": "puter-chat-completion",
+            "driver": driver,
+            "method": "complete",
+            "args": args,
+            "stream": False,
+            "testMode": False,
+        }
+
+        headers = self._get_auth_headers()
+        try:
+            async with self._throttler:
+                async with aiohttp.ClientSession() as session:
+                    response_data = await self._async_retry_request(
+                        session,
+                        "POST",
+                        f"{config.api_base}/drivers/call",
+                        json=payload,
+                        headers=headers
+                    )
+            
+            # Use the same content extraction logic
+            def extract_content(data):
+                """Extract content from various possible response formats"""
+                # [Same extraction logic as sync version]
+                if isinstance(data, dict) and "result" in data:
+                    result = data["result"]
+                    
+                    if isinstance(result, dict) and "message" in result:
+                        message = result["message"]
+                        if isinstance(message, dict) and "content" in message:
+                            content = message["content"]
+                            if isinstance(content, list):
+                                return "".join([item.get("text", "") for item in content if item.get("type") == "text"])
+                            elif isinstance(content, str):
+                                return content
+                    
+                    if isinstance(result, dict) and "content" in result:
+                        content = result["content"]
+                        if isinstance(content, list):
+                            return "".join([item.get("text", "") for item in content if item.get("type") == "text"])
+                        elif isinstance(content, str):
+                            return content
+                    
+                    if isinstance(result, str):
+                        return result
+                    
+                    if isinstance(result, dict) and "choices" in result:
+                        choices = result["choices"]
+                        if isinstance(choices, list) and len(choices) > 0:
+                            choice = choices[0]
+                            if isinstance(choice, dict) and "message" in choice:
+                                message = choice["message"]
+                                if isinstance(message, dict) and "content" in message:
+                                    return message["content"]
+                    
+                    if isinstance(result, dict) and "text" in result:
+                        return result["text"]
+                
+                if isinstance(data, dict) and "content" in data:
+                    content = data["content"]
+                    if isinstance(content, str):
+                        return content
+                
+                if isinstance(data, dict) and "text" in data:
+                    return data["text"]
+                
+                return None
+            
+            content = extract_content(response_data)
+            
+            if content and content.strip():
+                self.chat_history.append({"role": "user", "content": prompt})
+                self.chat_history.append({"role": "assistant", "content": content})
+                return content
+            else:
+                debug_info = {
+                    "response_keys": list(response_data.keys()) if isinstance(response_data, dict) else "Not a dict",
+                    "response_preview": str(response_data)[:200] + "..." if len(str(response_data)) > 200 else str(response_data)
+                }
+                return f"No content in AI response. Debug: {json.dumps(debug_info, indent=2)}"
+        except (aiohttp.ClientError, PuterAPIError) as e:
+            raise PuterAPIError(f"Async AI chat error: {e}")
 
     def clear_chat_history(self):
         """
