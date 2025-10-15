@@ -32,8 +32,8 @@ jobs:
     - name: Run performance benchmarks
       run: |
         python -c "
-        import os
-        os.makedirs('tests/benchmarks', exist_ok=True)
+import os
+os.makedirs('tests/benchmarks', exist_ok=True)
         
         # Create basic benchmark test
         with open('tests/benchmarks/test_performance.py', 'w') as f:

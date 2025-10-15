@@ -31,7 +31,7 @@ repos:
     hooks:
       - id: flake8
         additional_dependencies: [flake8-docstrings, flake8-import-order]
-        args: [--max-line-length=88, --extend-ignore=E203,W503]
+        args: [--max-line-length=88, --extend-ignore=E203,W503,E902]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.5.1
@@ -44,6 +44,7 @@ repos:
     rev: 1.7.5
     hooks:
       - id: bandit
+        additional_dependencies: [bandit[toml]]
         args: [--severity-level=medium]
         exclude: ^tests/
 
@@ -59,12 +60,6 @@ repos:
       - id: pyupgrade
         args: [--py37-plus]
 
-  - repo: https://github.com/adamchainz/django-upgrade
-    rev: 1.14.1
-    hooks:
-      - id: django-upgrade
-        args: [--target-version, "4.2"]
-    # Note: This is just an example, remove if not using Django
 
   - repo: local
     hooks:

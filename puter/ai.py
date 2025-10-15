@@ -1,10 +1,13 @@
+"""Puter AI client module for interacting with Puter.js AI models."""
+
+import asyncio
 import json
 import os
-import asyncio
 import time
-from typing import Any, Dict, List, Optional, Union
-import requests
+from typing import Dict, List, Optional
+
 import aiohttp
+import requests
 from asyncio_throttle import Throttler
 
 from .exceptions import PuterAuthError, PuterAPIError
@@ -32,7 +35,7 @@ class PuterAI:
         self._token = token
         self._username = username
         self._password = password
-        self.chat_history = []
+        self.chat_history: List[Dict[str, str]] = []
         self.current_model = "claude-opus-4"  # default model
         
         # Apply configuration overrides

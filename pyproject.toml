@@ -43,6 +43,7 @@ Issues = "https://github.com/CuzImSlymi/puter-python-sdk/issues"
 dev = [
     "pytest>=6.0",
     "pytest-cov",
+    "pytest-asyncio",
     "black",
     "flake8",
     "mypy",
