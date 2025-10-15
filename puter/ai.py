@@ -76,7 +76,7 @@ class PuterAI:
                 response.raise_for_status()
                 return response
                 
-            except requests.RequestException as e:
+            except Exception as e:
                 last_exception = e
                 if attempt < config.max_retries:
                     delay = config.retry_delay * (config.backoff_factor ** attempt)
@@ -114,7 +114,7 @@ class PuterAI:
                     response.raise_for_status()
                     return await response.json()
                     
-            except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+            except Exception as e:
                 last_exception = e
                 if attempt < config.max_retries:
                     delay = config.retry_delay * (config.backoff_factor ** attempt)
@@ -151,7 +151,7 @@ class PuterAI:
                 return True
             else:
                 raise PuterAuthError("Login failed. Please check your credentials.")
-        except (requests.RequestException, PuterAPIError) as e:
+        except Exception as e:
             raise PuterAuthError(f"Login error: {e}")
 
     async def async_login(self) -> bool:
@@ -183,7 +183,7 @@ class PuterAI:
                         return True
                     else:
                         raise PuterAuthError("Login failed. Please check your credentials.")
-        except (aiohttp.ClientError, PuterAPIError) as e:
+        except Exception as e:
             raise PuterAuthError(f"Async login error: {e}")
 
     def _get_auth_headers(self) -> Dict[str, str]:
@@ -336,7 +336,7 @@ class PuterAI:
                     "response_preview": str(response_data)[:200] + "..." if len(str(response_data)) > 200 else str(response_data)
                 }
                 return f"No content in AI response. Debug: {json.dumps(debug_info, indent=2)}"
-        except (requests.RequestException, PuterAPIError) as e:
+        except Exception as e:
             raise PuterAPIError(f"AI chat error: {e}")
 
     async def async_chat(self, prompt: str, model: Optional[str] = None) -> str:
@@ -450,7 +450,7 @@ class PuterAI:
                     "response_preview": str(response_data)[:200] + "..." if len(str(response_data)) > 200 else str(response_data)
                 }
                 return f"No content in AI response. Debug: {json.dumps(debug_info, indent=2)}"
-        except (aiohttp.ClientError, PuterAPIError) as e:
+        except Exception as e:
             raise PuterAPIError(f"Async AI chat error: {e}")
 
     def clear_chat_history(self):

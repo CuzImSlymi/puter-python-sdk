@@ -26,6 +26,8 @@ setup(
     include_package_data=True,
     install_requires=[
         'requests>=2.25.0',
+        'aiohttp>=3.8.0',
+        'asyncio-throttle>=1.0.2',
     ],
     author='Slymi',
     author_email='justin@slymi.org',  

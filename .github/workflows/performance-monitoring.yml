@@ -1,0 +1,261 @@
+name: Performance Monitoring
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 12 * * 0'  # Weekly on Sunday at noon
+
+jobs:
+  performance-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.11", "3.12"]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .
+        pip install pytest pytest-benchmark pytest-timeout memory-profiler
+    
+    - name: Run performance benchmarks
+      run: |
+        python -c "
+        import os
+        os.makedirs('tests/benchmarks', exist_ok=True)
+        
+        # Create basic benchmark test
+        with open('tests/benchmarks/test_performance.py', 'w') as f:
+            f.write('''
+import pytest
+import time
+from puter import PuterAI, PuterConfig
+
+class TestPerformance:
+    def test_client_initialization_speed(self, benchmark):
+        \"\"\"Test how fast we can initialize a PuterAI client.\"\"\"
+        def init_client():
+            return PuterAI(username=\"test\", password=\"test\")
+        
+        result = benchmark(init_client)
+        assert result is not None
+    
+    def test_config_loading_speed(self, benchmark):
+        \"\"\"Test configuration loading performance.\"\"\"
+        def load_config():
+            from puter.config import PuterConfig
+            return PuterConfig()
+        
+        result = benchmark(load_config)
+        assert result is not None
+    
+    def test_model_data_loading_speed(self, benchmark):
+        \"\"\"Test model data loading performance.\"\"\"
+        def load_models():
+            client = PuterAI(username=\"test\", password=\"test\")
+            return client.get_available_models()
+        
+        result = benchmark(load_models)
+        assert len(result) > 0
+            ''')
+        "
+        
+        pytest tests/benchmarks/ --benchmark-json=benchmark-results-${{ matrix.python-version }}.json
+    
+    - name: Upload benchmark results
+      uses: actions/upload-artifact@v3
+      with:
+        name: benchmark-results-${{ matrix.python-version }}
+        path: benchmark-results-${{ matrix.python-version }}.json
+
+  memory-profiling:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .
+        pip install memory-profiler psutil matplotlib
+    
+    - name: Create memory profiling script
+      run: |
+        cat > memory_profile_test.py << 'EOF'
+        #!/usr/bin/env python3
+        from memory_profiler import profile
+        import psutil
+        import os
+        from puter import PuterAI
+        
+        @profile
+        def test_memory_usage():
+            """Test memory usage of PuterAI operations."""
+            print(f"Initial memory: {psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024:.2f} MB")
+            
+            # Test client initialization
+            client = PuterAI(username="test", password="test")
+            print(f"After client init: {psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024:.2f} MB")
+            
+            # Test model loading
+            models = client.get_available_models()
+            print(f"After model loading: {psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024:.2f} MB")
+            print(f"Loaded {len(models)} models")
+            
+            # Test multiple client instances
+            clients = [PuterAI(username="test", password="test") for _ in range(10)]
+            print(f"After 10 clients: {psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024:.2f} MB")
+            
+            return len(models)
+        
+        if __name__ == "__main__":
+            result = test_memory_usage()
+            print(f"Test completed successfully with {result} models")
+        EOF
+    
+    - name: Run memory profiling
+      run: |
+        python memory_profile_test.py > memory-profile-report.txt 2>&1
+    
+    - name: Upload memory profile
+      uses: actions/upload-artifact@v3
+      with:
+        name: memory-profile-report
+        path: memory-profile-report.txt
+
+  load-testing:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'push'
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .
+        pip install locust pytest-xdist
+    
+    - name: Create load test script
+      run: |
+        cat > load_test.py << 'EOF'
+        #!/usr/bin/env python3
+        """Load testing script for Puter AI SDK."""
+        import time
+        import concurrent.futures
+        import statistics
+        from puter import PuterAI
+        
+        def simulate_user_session():
+            """Simulate a typical user session."""
+            start_time = time.time()
+            try:
+                # Initialize client
+                client = PuterAI(username="test_user", password="test_pass")
+                
+                # Get available models
+                models = client.get_available_models()
+                
+                # Simulate model switching
+                if models:
+                    client.set_model(models[0])
+                
+                # Clear chat history
+                client.clear_chat_history()
+                
+                return {
+                    'success': True,
+                    'duration': time.time() - start_time,
+                    'models_loaded': len(models)
+                }
+            except Exception as e:
+                return {
+                    'success': False,
+                    'duration': time.time() - start_time,
+                    'error': str(e)
+                }
+        
+        def run_load_test(num_users=50, max_workers=10):
+            """Run load test with specified number of concurrent users."""
+            print(f"Starting load test with {num_users} users and {max_workers} workers...")
+            
+            results = []
+            with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+                # Submit all tasks
+                futures = [executor.submit(simulate_user_session) for _ in range(num_users)]
+                
+                # Collect results
+                for future in concurrent.futures.as_completed(futures):
+                    result = future.result()
+                    results.append(result)
+                    print(f"Session completed: {'✅' if result['success'] else '❌'} "
+                          f"Duration: {result['duration']:.2f}s")
+            
+            # Analyze results
+            successful = [r for r in results if r['success']]
+            failed = [r for r in results if not r['success']]
+            
+            print(f"\n📊 Load Test Results:")
+            print(f"Total sessions: {len(results)}")
+            print(f"Successful: {len(successful)} ({len(successful)/len(results)*100:.1f}%)")
+            print(f"Failed: {len(failed)} ({len(failed)/len(results)*100:.1f}%)")
+            
+            if successful:
+                durations = [r['duration'] for r in successful]
+                print(f"\n⏱️  Performance Metrics:")
+                print(f"Average duration: {statistics.mean(durations):.2f}s")
+                print(f"Median duration: {statistics.median(durations):.2f}s")
+                print(f"Min duration: {min(durations):.2f}s")
+                print(f"Max duration: {max(durations):.2f}s")
+            
+            if failed:
+                print(f"\n❌ Error Summary:")
+                error_counts = {}
+                for r in failed:
+                    error = r.get('error', 'Unknown error')
+                    error_counts[error] = error_counts.get(error, 0) + 1
+                
+                for error, count in error_counts.items():
+                    print(f"  {error}: {count} occurrences")
+            
+            return len(successful) / len(results) >= 0.95  # 95% success rate threshold
+        
+        if __name__ == "__main__":
+            success = run_load_test(num_users=20, max_workers=5)
+            if not success:
+                print("❌ Load test failed to meet success criteria")
+                exit(1)
+            else:
+                print("✅ Load test passed!")
+        EOF
+    
+    - name: Run load test
+      run: |
+        python load_test.py > load-test-report.txt 2>&1
+      continue-on-error: true
+    
+    - name: Upload load test report
+      uses: actions/upload-artifact@v3
+      with:
+        name: load-test-report
+        path: load-test-report.txt
