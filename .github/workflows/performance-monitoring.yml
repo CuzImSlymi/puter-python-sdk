@@ -74,7 +74,7 @@ class TestPerformance:
         pytest tests/benchmarks/ --benchmark-json=benchmark-results-${{ matrix.python-version }}.json
     
     - name: Upload benchmark results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: benchmark-results-${{ matrix.python-version }}
         path: benchmark-results-${{ matrix.python-version }}.json
@@ -134,7 +134,7 @@ class TestPerformance:
         python memory_profile_test.py > memory-profile-report.txt 2>&1
     
     - name: Upload memory profile
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: memory-profile-report
         path: memory-profile-report.txt
@@ -255,7 +255,7 @@ class TestPerformance:
       continue-on-error: true
     
     - name: Upload load test report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: load-test-report
         path: load-test-report.txt

@@ -75,7 +75,7 @@ jobs:
         xenon --max-average=B --max-modules=B --max-absolute=B puter/
     
     - name: Upload complexity report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: complexity-report
         path: complexity-report.md
@@ -114,7 +114,7 @@ jobs:
         GITHUB_TOKEN: ${{ github.token }}
     
     - name: Upload coverage reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: coverage-reports-${{ matrix.python-version }}
         path: |
@@ -147,7 +147,7 @@ jobs:
         interrogate puter/ -v --ignore-init-method --ignore-init-module
     
     - name: Upload documentation artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: documentation-quality
         path: docs/docstring-coverage.svg
@@ -178,7 +178,7 @@ jobs:
         pytest tests/benchmarks/ --benchmark-json=benchmark-results.json || echo "No benchmark tests found"
     
     - name: Upload benchmark results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: benchmark-results
@@ -206,7 +206,7 @@ jobs:
         mypy puter/ --html-report=mypy-report --any-exprs-report=mypy-any-report || true
     
     - name: Upload type checking reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: type-checking-reports
         path: |
