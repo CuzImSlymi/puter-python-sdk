@@ -89,9 +89,7 @@ class PuterAI:
             except Exception as e:
                 last_exception = e
                 if attempt < config.max_retries:
-                    delay = config.retry_delay * (
-                        config.backoff_factor**attempt
-                    )
+                    delay = config.retry_delay * (config.backoff_factor**attempt)
                     time.sleep(delay)
                     continue
                 break
@@ -133,9 +131,7 @@ class PuterAI:
             except Exception as e:
                 last_exception = e
                 if attempt < config.max_retries:
-                    delay = config.retry_delay * (
-                        config.backoff_factor**attempt
-                    )
+                    delay = config.retry_delay * (config.backoff_factor**attempt)
                     await asyncio.sleep(delay)
                     continue
                 break
@@ -155,9 +151,7 @@ class PuterAI:
             bool: True if login is successful, False otherwise.
         """
         if not self._username or not self._password:
-            raise PuterAuthError(
-                "Username and password must be set for login."
-            )
+            raise PuterAuthError("Username and password must be set for login.")
 
         payload = {"username": self._username, "password": self._password}
         try:
@@ -172,9 +166,7 @@ class PuterAI:
                 self._token = data["token"]
                 return True
             else:
-                raise PuterAuthError(
-                    "Login failed. Please check your credentials."
-                )
+                raise PuterAuthError("Login failed. Please check your credentials.")
         except Exception as e:
             raise PuterAuthError(f"Login error: {e}")
 
@@ -189,9 +181,7 @@ class PuterAI:
             bool: True if login is successful, False otherwise.
         """
         if not self._username or not self._password:
-            raise PuterAuthError(
-                "Username and password must be set for login."
-            )
+            raise PuterAuthError("Username and password must be set for login.")
 
         payload = {"username": self._username, "password": self._password}
         try:
@@ -340,15 +330,9 @@ class PuterAI:
                         choices = result["choices"]
                         if isinstance(choices, list) and len(choices) > 0:
                             choice = choices[0]
-                            if (
-                                isinstance(choice, dict)
-                                and "message" in choice
-                            ):
+                            if isinstance(choice, dict) and "message" in choice:
                                 message = choice["message"]
-                                if (
-                                    isinstance(message, dict)
-                                    and "content" in message
-                                ):
+                                if isinstance(message, dict) and "content" in message:
                                     return message["content"]
 
                     # Case 5: result.text (simple text field)
@@ -371,9 +355,7 @@ class PuterAI:
 
             if content and content.strip():
                 self.chat_history.append({"role": "user", "content": prompt})
-                self.chat_history.append(
-                    {"role": "assistant", "content": content}
-                )
+                self.chat_history.append({"role": "assistant", "content": content})
                 return content
             else:
                 # Enhanced debugging information
@@ -396,9 +378,7 @@ class PuterAI:
         except Exception as e:
             raise PuterAPIError(f"AI chat error: {e}")
 
-    async def async_chat(
-        self, prompt: str, model: Optional[str] = None
-    ) -> str:
+    async def async_chat(self, prompt: str, model: Optional[str] = None) -> str:
         """
         Async version of chat method. Sends a chat message to the AI model and returns its response.
 
@@ -491,15 +471,9 @@ class PuterAI:
                         choices = result["choices"]
                         if isinstance(choices, list) and len(choices) > 0:
                             choice = choices[0]
-                            if (
-                                isinstance(choice, dict)
-                                and "message" in choice
-                            ):
+                            if isinstance(choice, dict) and "message" in choice:
                                 message = choice["message"]
-                                if (
-                                    isinstance(message, dict)
-                                    and "content" in message
-                                ):
+                                if isinstance(message, dict) and "content" in message:
                                     return message["content"]
 
                     if isinstance(result, dict) and "text" in result:
@@ -519,9 +493,7 @@ class PuterAI:
 
             if content and content.strip():
                 self.chat_history.append({"role": "user", "content": prompt})
-                self.chat_history.append(
-                    {"role": "assistant", "content": content}
-                )
+                self.chat_history.append({"role": "assistant", "content": content})
                 return content
             else:
                 debug_info = {
