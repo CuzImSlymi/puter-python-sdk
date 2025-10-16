@@ -32,7 +32,8 @@ jobs:
     - name: Run performance benchmarks
       run: |
         mkdir -p tests/benchmarks
-        echo 'import pytest
+        cat > tests/benchmarks/test_performance.py << 'PERF_TEST'
+import pytest
 import time
 from puter import PuterAI, PuterConfig
 
@@ -61,7 +62,8 @@ class TestPerformance:
             return client.get_available_models()
         
         result = benchmark(load_models)
-        assert len(result) > 0' > tests/benchmarks/test_performance.py
+        assert len(result) > 0
+PERF_TEST
         pytest tests/benchmarks/ --benchmark-json=benchmark-results-${{ matrix.python-version }}.json
     
     - name: Upload benchmark results
