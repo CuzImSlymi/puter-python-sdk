@@ -132,7 +132,7 @@ jobs:
     - uses: actions/checkout@v4
     
     - name: Download build artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: dist-${{ needs.validate-tag.outputs.version }}
         path: dist/
@@ -155,7 +155,7 @@ jobs:
         fetch-depth: 0
     
     - name: Download build artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: dist-${{ needs.validate-tag.outputs.version }}
         path: dist/
