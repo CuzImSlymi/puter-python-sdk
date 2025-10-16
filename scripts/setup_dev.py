@@ -23,9 +23,13 @@ def check_python_version():
     version = sys.version_info
     if version < (3, 8):
         print("❌ Python 3.8 or higher is required")
-        print(f"Current version: {version.major}.{version.minor}.{version.micro}")
+        print(
+            f"Current version: {version.major}.{version.minor}.{version.micro}"
+        )
         sys.exit(1)
-    print(f"✅ Python {version.major}.{version.minor}.{version.micro} is compatible")
+    print(
+        f"✅ Python {version.major}.{version.minor}.{version.micro} is compatible"
+    )
 
 
 def check_git():
@@ -189,7 +193,9 @@ def run_initial_tests():
     else:
         python_path = "venv/bin/python"
 
-    if not run_command(f"{python_path} -m pytest tests/ -v --tb=short", check=False):
+    if not run_command(
+        f"{python_path} -m pytest tests/ -v --tb=short", check=False
+    ):
         print("⚠️  Some tests failed, but setup is complete")
     else:
         print("✅ All tests passed!")

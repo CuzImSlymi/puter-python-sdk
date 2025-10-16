@@ -137,6 +137,7 @@ class TestPuterAIOfflineIntegration:
         """Test that configuration changes don't affect other instances."""
         client1 = PuterAI(username="user1", password="pass1", timeout=30)
         client2 = PuterAI(username="user2", password="pass2", timeout=60)
+        assert client1 is not None and client2 is not None  # Use both clients
 
         # Both should have their configurations applied
         from puter.config import config
@@ -168,7 +169,9 @@ class TestPuterAIStressTests:
 
         # Simulate large chat history
         for i in range(1000):
-            client.chat_history.append({"role": "user", "content": f"Message {i}"})
+            client.chat_history.append(
+                {"role": "user", "content": f"Message {i}"}
+            )
             client.chat_history.append(
                 {"role": "assistant", "content": f"Response {i}"}
             )

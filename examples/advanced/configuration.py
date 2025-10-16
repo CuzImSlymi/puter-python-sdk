@@ -114,7 +114,9 @@ def demonstrate_config_profiles():
             print(f"    {key}: {value}")
 
         # Show how to apply profile
-        print(f"  Usage: PuterAI(username='...', password='...', **{settings})")
+        print(
+            f"  Usage: PuterAI(username='...', password='...', **{settings})"
+        )
 
 
 def demonstrate_monitoring_config():

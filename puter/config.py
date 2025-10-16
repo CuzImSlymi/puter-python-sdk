@@ -1,6 +1,4 @@
-"""
-Configuration settings for the Puter AI SDK.
-"""
+"""Configuration settings for the Puter AI SDK."""
 
 import os
 from typing import Any, Dict
@@ -10,9 +8,12 @@ class PuterConfig:
     """Configuration class for Puter AI SDK."""
 
     def __init__(self):
+        """Initialize configuration with default values."""
         # API Configuration
         self.api_base = os.getenv("PUTER_API_BASE", "https://api.puter.com")
-        self.login_url = os.getenv("PUTER_LOGIN_URL", "https://puter.com/login")
+        self.login_url = os.getenv(
+            "PUTER_LOGIN_URL", "https://puter.com/login"
+        )
 
         # Request Configuration
         self.timeout = int(os.getenv("PUTER_TIMEOUT", "30"))
@@ -21,8 +22,12 @@ class PuterConfig:
         self.backoff_factor = float(os.getenv("PUTER_BACKOFF_FACTOR", "2.0"))
 
         # Rate Limiting
-        self.rate_limit_requests = int(os.getenv("PUTER_RATE_LIMIT_REQUESTS", "10"))
-        self.rate_limit_period = int(os.getenv("PUTER_RATE_LIMIT_PERIOD", "60"))
+        self.rate_limit_requests = int(
+            os.getenv("PUTER_RATE_LIMIT_REQUESTS", "10")
+        )
+        self.rate_limit_period = int(
+            os.getenv("PUTER_RATE_LIMIT_PERIOD", "60")
+        )
 
         # Default Headers
         self.headers = {
@@ -31,7 +36,11 @@ class PuterConfig:
             "Connection": "keep-alive",
             "Origin": "https://puter.com",
             "Referer": "https://puter.com/",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/124.0.0.0 Safari/537.36"
+            ),
         }
 
     def update(self, **kwargs):

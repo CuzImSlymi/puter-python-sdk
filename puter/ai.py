@@ -15,12 +15,11 @@ from .exceptions import PuterAPIError, PuterAuthError
 
 
 class PuterAI:
-    """
-    Client for interacting with Puter.js AI models.
+    """Client for interacting with Puter.js AI models.
 
     This class handles authentication, model selection, and chat interactions
-    with the Puter.js AI API with enhanced features like retry logic, rate limiting,
-    and async support.
+    with the Puter.js AI API with enhanced features like retry logic, rate
+    limiting, and async support.
     """
 
     def __init__(
@@ -30,13 +29,13 @@ class PuterAI:
         token: Optional[str] = None,
         **config_overrides,
     ):
-        """
-        Initializes the PuterAI client.
+        """Initialize the PuterAI client.
 
         Args:
             username (Optional[str]): Your Puter.js username.
             password (Optional[str]): Your Puter.js password.
-            token (Optional[str]): An existing authentication token. If provided, username and password are not needed.
+            token (Optional[str]): An existing authentication token. If provided,
+                username and password are not needed.
             **config_overrides: Override default configuration values.
         """
         self._token = token
@@ -55,18 +54,17 @@ class PuterAI:
             period=config.rate_limit_period,
         )
 
-        # Get the path to the available_models.json file relative to this module
+        # Get the path to the available_models.json file relative to module
         current_dir = os.path.dirname(__file__)
         models_file = os.path.join(current_dir, "available_models.json")
         with open(models_file, "r") as f:
             self.available_models = json.load(f)
 
     def _retry_request(self, request_func, *args, **kwargs):
-        """
-        Execute a request with retry logic and exponential backoff.
+        """Execute a request with retry logic and exponential backoff.
 
         Args:
-            request_func: The function to execute (requests.post, requests.get, etc.)
+            request_func: The function to execute (requests.post, etc.)
             *args, **kwargs: Arguments to pass to the request function
 
         Returns:
@@ -89,20 +87,22 @@ class PuterAI:
             except Exception as e:
                 last_exception = e
                 if attempt < config.max_retries:
-                    delay = config.retry_delay * (config.backoff_factor**attempt)
+                    delay = config.retry_delay * (
+                        config.backoff_factor**attempt
+                    )
                     time.sleep(delay)
                     continue
                 break
 
         raise PuterAPIError(
-            f"Request failed after {config.max_retries + 1} attempts: {last_exception}"
+            f"Request failed after {config.max_retries + 1} attempts: "
+            f"{last_exception}"
         )
 
     async def _async_retry_request(
         self, session: aiohttp.ClientSession, method: str, url: str, **kwargs
     ):
-        """
-        Execute an async request with retry logic and exponential backoff.
+        """Execute an async request with retry logic and exponential backoff.
 
         Args:
             session: The aiohttp session
@@ -131,18 +131,20 @@ class PuterAI:
             except Exception as e:
                 last_exception = e
                 if attempt < config.max_retries:
-                    delay = config.retry_delay * (config.backoff_factor**attempt)
+                    delay = config.retry_delay * (
+                        config.backoff_factor**attempt
+                    )
                     await asyncio.sleep(delay)
                     continue
                 break
 
         raise PuterAPIError(
-            f"Async request failed after {config.max_retries + 1} attempts: {last_exception}"
+            f"Async request failed after {config.max_retries + 1} attempts: "
+            f"{last_exception}"
         )
 
     def login(self) -> bool:
-        """
-        Authenticates with Puter.js using the provided username and password.
+        """Authenticate with Puter.js using the provided username and password.
 
         Raises:
             PuterAuthError: If username or password are not set, or if login fails.
@@ -151,7 +153,9 @@ class PuterAI:
             bool: True if login is successful, False otherwise.
         """
         if not self._username or not self._password:
-            raise PuterAuthError("Username and password must be set for login.")
+            raise PuterAuthError(
+                "Username and password must be set for login."
+            )
 
         payload = {"username": self._username, "password": self._password}
         try:
@@ -166,13 +170,14 @@ class PuterAI:
                 self._token = data["token"]
                 return True
             else:
-                raise PuterAuthError("Login failed. Please check your credentials.")
+                raise PuterAuthError(
+                    "Login failed. Please check your credentials."
+                )
         except Exception as e:
             raise PuterAuthError(f"Login error: {e}")
 
     async def async_login(self) -> bool:
-        """
-        Async version of login method.
+        """Async version of login method.
 
         Raises:
             PuterAuthError: If username or password are not set, or if login fails.
@@ -181,7 +186,9 @@ class PuterAI:
             bool: True if login is successful, False otherwise.
         """
         if not self._username or not self._password:
-            raise PuterAuthError("Username and password must be set for login.")
+            raise PuterAuthError(
+                "Username and password must be set for login."
+            )
 
         payload = {"username": self._username, "password": self._password}
         try:
@@ -205,14 +212,14 @@ class PuterAI:
             raise PuterAuthError(f"Async login error: {e}")
 
     def _get_auth_headers(self) -> Dict[str, str]:
-        """
-        Gets the authorization headers for API requests.
+        """Get the authorization headers for API requests.
 
         Raises:
             PuterAuthError: If not authenticated.
 
         Returns:
-            Dict[str, str]: A dictionary of headers including the authorization token.
+            Dict[str, str]: A dictionary of headers including the authorization
+                token.
         """
         if not self._token:
             raise PuterAuthError("Not authenticated. Please login first.")
@@ -223,20 +230,19 @@ class PuterAI:
         }
 
     def _get_driver_for_model(self, model_name: str) -> str:
-        """
-        Determines the backend driver for a given model name.
+        """Determine the backend driver for a given model name.
 
         Args:
             model_name (str): The name of the AI model.
 
         Returns:
-            str: The corresponding driver name (e.g., "claude", "openai-completion").
+            str: The corresponding driver name (e.g., "claude",
+                "openai-completion").
         """
         return self.available_models.get(model_name, "openai-completion")
 
     def chat(self, prompt: str, model: Optional[str] = None) -> str:
-        """
-        Sends a chat message to the AI model and returns its response.
+        """Send a chat message to the AI model and return its response.
 
         The conversation history is automatically managed.
 
@@ -330,9 +336,15 @@ class PuterAI:
                         choices = result["choices"]
                         if isinstance(choices, list) and len(choices) > 0:
                             choice = choices[0]
-                            if isinstance(choice, dict) and "message" in choice:
+                            if (
+                                isinstance(choice, dict)
+                                and "message" in choice
+                            ):
                                 message = choice["message"]
-                                if isinstance(message, dict) and "content" in message:
+                                if (
+                                    isinstance(message, dict)
+                                    and "content" in message
+                                ):
                                     return message["content"]
 
                     # Case 5: result.text (simple text field)
@@ -355,7 +367,9 @@ class PuterAI:
 
             if content and content.strip():
                 self.chat_history.append({"role": "user", "content": prompt})
-                self.chat_history.append({"role": "assistant", "content": content})
+                self.chat_history.append(
+                    {"role": "assistant", "content": content}
+                )
                 return content
             else:
                 # Enhanced debugging information
@@ -378,9 +392,10 @@ class PuterAI:
         except Exception as e:
             raise PuterAPIError(f"AI chat error: {e}")
 
-    async def async_chat(self, prompt: str, model: Optional[str] = None) -> str:
-        """
-        Async version of chat method. Sends a chat message to the AI model and returns its response.
+    async def async_chat(
+        self, prompt: str, model: Optional[str] = None
+    ) -> str:
+        """Send a chat message to the AI model and return its response (async).
 
         The conversation history is automatically managed.
 
@@ -471,9 +486,15 @@ class PuterAI:
                         choices = result["choices"]
                         if isinstance(choices, list) and len(choices) > 0:
                             choice = choices[0]
-                            if isinstance(choice, dict) and "message" in choice:
+                            if (
+                                isinstance(choice, dict)
+                                and "message" in choice
+                            ):
                                 message = choice["message"]
-                                if isinstance(message, dict) and "content" in message:
+                                if (
+                                    isinstance(message, dict)
+                                    and "content" in message
+                                ):
                                     return message["content"]
 
                     if isinstance(result, dict) and "text" in result:
@@ -493,7 +514,9 @@ class PuterAI:
 
             if content and content.strip():
                 self.chat_history.append({"role": "user", "content": prompt})
-                self.chat_history.append({"role": "assistant", "content": content})
+                self.chat_history.append(
+                    {"role": "assistant", "content": content}
+                )
                 return content
             else:
                 debug_info = {
@@ -513,14 +536,11 @@ class PuterAI:
             raise PuterAPIError(f"Async AI chat error: {e}")
 
     def clear_chat_history(self):
-        """
-        Clears the current chat history.
-        """
+        """Clear the current chat history."""
         self.chat_history = []
 
     def set_model(self, model_name: str) -> bool:
-        """
-        Sets the current AI model for subsequent chat interactions.
+        """Set the current AI model for subsequent chat interactions.
 
         Args:
             model_name (str): The name of the model to set.
@@ -534,8 +554,7 @@ class PuterAI:
         return False
 
     def get_available_models(self) -> List[str]:
-        """
-        Retrieves a list of all available AI model names.
+        """Retrieve a list of all available AI model names.
 
         Returns:
             List[str]: A list of strings, where each string is an available model name.

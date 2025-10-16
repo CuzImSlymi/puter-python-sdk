@@ -81,7 +81,10 @@ class TestCoverageBoost:
 
         # First call fails, second succeeds
         mock_response = Mock()
-        mock_response.json.return_value = {"proceed": True, "token": "test_token"}
+        mock_response.json.return_value = {
+            "proceed": True,
+            "token": "test_token",
+        }
         mock_response.raise_for_status.return_value = None
 
         mock_post.side_effect = [
@@ -126,6 +129,7 @@ class TestCoverageBoost:
 
         try:
             client = PuterAI(username="test", password="test", timeout=999)
+            assert client is not None  # Use the client
             assert config.timeout == 999
         finally:
             config.update(timeout=original_timeout)
@@ -144,7 +148,9 @@ class TestCoverageBoost:
         client = PuterAI(username="test", password="test")
 
         mock_response = Mock()
-        mock_response.json.side_effect = json.JSONDecodeError("Invalid JSON", "", 0)
+        mock_response.json.side_effect = json.JSONDecodeError(
+            "Invalid JSON", "", 0
+        )
         mock_response.raise_for_status.return_value = None
         mock_post.return_value = mock_response
 
