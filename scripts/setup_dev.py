@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Development environment setup script for Puter Python SDK.
+"""Development environment setup script for Puter Python SDK.
 
 This script sets up a complete development environment with all necessary
 tools and dependencies for contributing to the project.

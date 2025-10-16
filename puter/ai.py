@@ -4,14 +4,17 @@ import asyncio
 import json
 import os
 import time
-from typing import Dict, List, Optional
+from typing import Dict
+from typing import List
+from typing import Optional
 
 import aiohttp
 import requests
 from asyncio_throttle import Throttler
 
 from .config import config
-from .exceptions import PuterAPIError, PuterAuthError
+from .exceptions import PuterAPIError
+from .exceptions import PuterAuthError
 
 
 class PuterAI:

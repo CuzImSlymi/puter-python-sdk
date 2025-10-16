@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Release automation script for Puter Python SDK.
+"""Release automation script for Puter Python SDK.
 
 This script helps automate the release process including:
 - Version validation and updating
