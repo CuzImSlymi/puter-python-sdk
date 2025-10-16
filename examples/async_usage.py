@@ -22,7 +22,9 @@ async def async_chat_example():
     password = os.getenv("PUTER_PASSWORD", "your_password_here")
 
     if username == "your_username_here":
-        print("⚠️  Please set PUTER_USERNAME and PUTER_PASSWORD environment variables")
+        print(
+            "⚠️  Please set PUTER_USERNAME and PUTER_PASSWORD environment variables"
+        )
         return
 
     try:
@@ -98,7 +100,9 @@ async def rate_limited_example():
 
         for i in range(5):
             start = time.time()
-            response = await client.async_chat(f"Quick question #{i+1}: What's 2+2?")
+            response = await client.async_chat(
+                f"Quick question #{i+1}: What's 2+2?"
+            )
             elapsed = time.time() - start
             print(f"Request {i+1}: {elapsed:.2f}s - {response[:50]}...")
 

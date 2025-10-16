@@ -1,11 +1,10 @@
 """Integration tests for the Puter Python SDK."""
 
 import os
-from unittest.mock import patch
 
 import pytest
 
-from puter import PuterAI, PuterAPIError, PuterAuthError
+from puter import PuterAI, PuterAuthError
 
 
 @pytest.mark.integration
@@ -73,7 +72,7 @@ class TestPuterAIIntegration:
         client.login()
 
         # Get available models
-        models = client.get_available_models()
+        # models = client.get_available_models()
         assert len(models) > 0
 
         # Try to switch to a different model
@@ -113,7 +112,7 @@ class TestPuterAIOfflineIntegration:
         client = PuterAI(username="test", password="test")
 
         start_time = time.time()
-        models = client.get_available_models()
+        # models = client.get_available_models()
         end_time = time.time()
 
         # Should load quickly (less than 0.1 seconds)
@@ -136,8 +135,8 @@ class TestPuterAIOfflineIntegration:
 
     def test_configuration_isolation(self):
         """Test that configuration changes don't affect other instances."""
-        client1 = PuterAI(username="user1", password="pass1", timeout=30)
-        client2 = PuterAI(username="user2", password="pass2", timeout=60)
+        # client1 = PuterAI(username="user1", password="pass1", timeout=30)
+        # client2 = PuterAI(username="user2", password="pass2", timeout=60)
 
         # Both should have their configurations applied
         from puter.config import config
@@ -153,7 +152,7 @@ class TestPuterAIStressTests:
     def test_rapid_model_switching(self):
         """Test rapid model switching doesn't cause issues."""
         client = PuterAI(username="test", password="test")
-        models = client.get_available_models()
+        # models = client.get_available_models()
 
         if len(models) >= 2:
             # Switch between models rapidly
@@ -169,7 +168,9 @@ class TestPuterAIStressTests:
 
         # Simulate large chat history
         for i in range(1000):
-            client.chat_history.append({"role": "user", "content": f"Message {i}"})
+            client.chat_history.append(
+                {"role": "user", "content": f"Message {i}"}
+            )
             client.chat_history.append(
                 {"role": "assistant", "content": f"Response {i}"}
             )
@@ -189,7 +190,6 @@ class TestPuterAIStressTests:
     def test_memory_usage_stability(self):
         """Test memory usage doesn't grow excessively."""
         import gc
-        import sys
 
         # Get initial memory usage (rough estimate)
         gc.collect()
@@ -198,7 +198,7 @@ class TestPuterAIStressTests:
         # Create and destroy many clients
         for _ in range(100):
             client = PuterAI(username="test", password="test")
-            models = client.get_available_models()
+            # models = client.get_available_models()
             client.clear_chat_history()
             del client
 

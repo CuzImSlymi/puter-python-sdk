@@ -35,7 +35,7 @@ def demonstrate_env_config():
     # Create new config to pick up env vars
     new_config = PuterConfig()
 
-    print(f"\n✅ Configuration loaded from environment:")
+    print("\n✅ Configuration loaded from environment:")
     print(f"  • API Base: {new_config.api_base}")
     print(f"  • Timeout: {new_config.timeout}s")
     print(f"  • Max Retries: {new_config.max_retries}")
@@ -60,14 +60,15 @@ def demonstrate_programmatic_config():
 
     # Method 2: Client-specific overrides
     print("\nMethod 2: Client-specific overrides")
-    client = PuterAI(
-        username="demo",
-        password="demo",
-        timeout=90,
-        max_retries=10,
-        rate_limit_requests=50,
-        rate_limit_period=120,
-    )
+    # Example of client-specific overrides:
+    # client = PuterAI(
+    #     username="demo",
+    #     password="demo",
+    #     timeout=90,
+    #     max_retries=10,
+    #     rate_limit_requests=50,
+    #     rate_limit_period=120,
+    # )
 
     print("  ✅ Client created with custom settings")
 
@@ -113,7 +114,9 @@ def demonstrate_config_profiles():
             print(f"    {key}: {value}")
 
         # Show how to apply profile
-        print(f"  Usage: PuterAI(username='...', password='...', **{settings})")
+        print(
+            f"  Usage: PuterAI(username='...', password='...', **{settings})"
+        )
 
 
 def demonstrate_monitoring_config():

@@ -48,7 +48,11 @@ def sample_chat_response():
 @pytest.fixture
 def sample_models_data():
     """Sample models data for testing."""
-    return {"gpt-4": "openai-completion", "claude-3": "claude", "gemini-pro": "google"}
+    return {
+        "gpt-4": "openai-completion",
+        "claude-3": "claude",
+        "gemini-pro": "google",
+    }
 
 
 @pytest.fixture
@@ -117,10 +121,16 @@ def mock_throttler():
 def pytest_configure(config):
     """Configure pytest with custom markers."""
     config.addinivalue_line("markers", "unit: mark test as a unit test")
-    config.addinivalue_line("markers", "integration: mark test as an integration test")
+    config.addinivalue_line(
+        "markers", "integration: mark test as an integration test"
+    )
     config.addinivalue_line("markers", "slow: mark test as slow running")
-    config.addinivalue_line("markers", "auth: mark test as requiring authentication")
-    config.addinivalue_line("markers", "network: mark test as requiring network access")
+    config.addinivalue_line(
+        "markers", "auth: mark test as requiring authentication"
+    )
+    config.addinivalue_line(
+        "markers", "network: mark test as requiring network access"
+    )
 
 
 # Environment-based test skipping
@@ -134,7 +144,9 @@ def pytest_runtest_setup(item):
 
     if "network" in item.keywords:
         if not os.getenv("RUN_NETWORK_TESTS"):
-            pytest.skip("Network tests disabled (set RUN_NETWORK_TESTS=1 to enable)")
+            pytest.skip(
+                "Network tests disabled (set RUN_NETWORK_TESTS=1 to enable)"
+            )
 
     if "auth" in item.keywords:
         if not (os.getenv("PUTER_USERNAME") and os.getenv("PUTER_PASSWORD")):

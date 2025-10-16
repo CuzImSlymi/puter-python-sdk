@@ -43,14 +43,16 @@ class BatchProcessor:
         )
         self.client.login()
 
-    def process_sentiment_analysis(self, texts: List[str]) -> List[Dict[str, Any]]:
+    def process_sentiment_analysis(
+        self, texts: List[str]
+    ) -> List[Dict[str, Any]]:
         """Analyze sentiment for multiple texts."""
         print(f"🎭 Analyzing sentiment for {len(texts)} texts...")
 
         results = []
         for i, text in enumerate(texts, 1):
             try:
-                prompt = f"""Analyze the sentiment of this text and provide:
+                prompt = """Analyze the sentiment of this text and provide:
                 1. Overall sentiment (positive/negative/neutral)
                 2. Confidence score (0-100%)
                 3. Key emotions detected
@@ -119,7 +121,7 @@ class BatchProcessor:
         results = []
         for i, text in enumerate(texts, 1):
             try:
-                prompt = f"""Summarize this text in exactly {max_length} words or less. 
+                prompt = """Summarize this text in exactly {max_length} words or less. 
                 Keep the key information and main points.
                 
                 Text: "{text}"
@@ -165,7 +167,7 @@ class BatchProcessor:
         results = []
         for i, text in enumerate(texts, 1):
             try:
-                prompt = f"""Translate this text to {target_language}. 
+                prompt = """Translate this text to {target_language}. 
                 Maintain the original meaning and tone.
                 
                 Text: "{text}"
@@ -208,12 +210,12 @@ class BatchProcessor:
         async def process_single(text, index):
             try:
                 if task_type == "sentiment":
-                    prompt = f"""Analyze sentiment: "{text}" 
+                    prompt = """Analyze sentiment: "{text}" 
                     Return JSON: {{"sentiment": "positive/negative/neutral", "score": 0.0}}"""
                 elif task_type == "summary":
-                    prompt = f"""Summarize in 50 words: "{text}"""
+                    prompt = """Summarize in 50 words: "{text}"""
                 else:
-                    prompt = f"""Process this text: "{text}"""
+                    prompt = """Process this text: "{text}"""
 
                 response = await self.client.async_chat(prompt)
 
@@ -250,7 +252,9 @@ class BatchProcessor:
         )
         return successful_results
 
-    def save_results(self, results: List[Dict[str, Any]], filename=None, format="json"):
+    def save_results(
+        self, results: List[Dict[str, Any]], filename=None, format="json"
+    ):
         """Save processing results to file."""
         if not filename:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -340,10 +344,14 @@ def main():
                     print(f"\n💾 Results saved to {filename}")
 
                     stats = processor.get_stats()
-                    print(f"📈 Stats: {stats['success_rate']:.1f}% success rate")
+                    print(
+                        f"📈 Stats: {stats['success_rate']:.1f}% success rate"
+                    )
 
             elif choice == "2":
-                print(f"\n📝 Processing {len(sample_texts)} texts for summarization...")
+                print(
+                    f"\n📝 Processing {len(sample_texts)} texts for summarization..."
+                )
                 results = processor.process_text_summarization(
                     sample_texts, max_length=30
                 )
@@ -354,9 +362,12 @@ def main():
 
             elif choice == "3":
                 language = (
-                    input("Target language (default: Spanish): ").strip() or "Spanish"
+                    input("Target language (default: Spanish): ").strip()
+                    or "Spanish"
                 )
-                print(f"\n🌍 Translating {len(sample_texts)} texts to {language}...")
+                print(
+                    f"\n🌍 Translating {len(sample_texts)} texts to {language}..."
+                )
                 results = processor.process_translation(sample_texts, language)
 
                 if results:
@@ -364,9 +375,11 @@ def main():
                     print(f"\n💾 Results saved to {filename}")
 
             elif choice == "4":
-                print(f"\n🚀 Async processing demo...")
+                print("\n🚀 Async processing demo...")
                 results = asyncio.run(
-                    processor.async_batch_process(sample_texts[:4], "sentiment")
+                    processor.async_batch_process(
+                        sample_texts[:4], "sentiment"
+                    )
                 )
 
                 if results:
@@ -379,13 +392,19 @@ def main():
                     with open(filename, "r", encoding="utf-8") as f:
                         if filename.endswith(".csv"):
                             reader = csv.reader(f)
-                            texts = [row[0] for row in reader if row]  # First column
+                            texts = [
+                                row[0] for row in reader if row
+                            ]  # First column
                         else:
-                            texts = [line.strip() for line in f if line.strip()]
+                            texts = [
+                                line.strip() for line in f if line.strip()
+                            ]
 
                     print(f"📁 Loaded {len(texts)} texts from {filename}")
                     task = (
-                        input("Task (sentiment/summary/translation): ").strip().lower()
+                        input("Task (sentiment/summary/translation): ")
+                        .strip()
+                        .lower()
                     )
 
                     if task == "sentiment":
@@ -414,7 +433,7 @@ def main():
             print("\n" + "-" * 50)
 
         final_stats = processor.get_stats()
-        print(f"\n📊 Final Statistics:")
+        print("\n📊 Final Statistics:")
         print(f"• Total processed: {final_stats['total_processed']}")
         print(f"• Success rate: {final_stats['success_rate']:.1f}%")
         print(f"• Errors: {final_stats['errors']}")

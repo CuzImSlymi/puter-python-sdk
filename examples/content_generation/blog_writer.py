@@ -32,7 +32,7 @@ class BlogWriter:
 
     def generate_blog_ideas(self, topic, count=5):
         """Generate blog post ideas for a topic."""
-        prompt = f"""Generate {count} engaging blog post ideas about "{topic}". 
+        prompt = """Generate {count} engaging blog post ideas about "{topic}". 
         For each idea, provide:
         1. A catchy title
         2. A brief description (1-2 sentences)
@@ -43,9 +43,11 @@ class BlogWriter:
         response = self.client.chat(prompt)
         return response
 
-    def create_outline(self, title, target_audience="general readers", word_count=1000):
+    def create_outline(
+        self, title, target_audience="general readers", word_count=1000
+    ):
         """Create a detailed blog post outline."""
-        prompt = f"""Create a detailed outline for a blog post titled "{title}".
+        prompt = """Create a detailed outline for a blog post titled "{title}".
         
         Target audience: {target_audience}
         Target word count: {word_count} words
@@ -64,7 +66,7 @@ class BlogWriter:
 
     def write_introduction(self, title, outline_context=""):
         """Write an engaging introduction."""
-        prompt = f"""Write an engaging introduction for a blog post titled "{title}".
+        prompt = """Write an engaging introduction for a blog post titled "{title}".
         
         {f"Context from outline: {outline_context}" if outline_context else ""}
         
@@ -81,7 +83,7 @@ class BlogWriter:
 
     def write_section(self, section_title, context, word_count=300):
         """Write a detailed section of the blog post."""
-        prompt = f"""Write a detailed section for a blog post with the heading "{section_title}".
+        prompt = """Write a detailed section for a blog post with the heading "{section_title}".
         
         Context: {context}
         Target length: ~{word_count} words
@@ -100,7 +102,7 @@ class BlogWriter:
 
     def write_conclusion(self, title, main_points):
         """Write a compelling conclusion with call-to-action."""
-        prompt = f"""Write a compelling conclusion for a blog post titled "{title}".
+        prompt = """Write a compelling conclusion for a blog post titled "{title}".
         
         Main points covered: {main_points}
         
@@ -118,7 +120,7 @@ class BlogWriter:
 
     def generate_seo_elements(self, title, content_preview):
         """Generate SEO elements for the blog post."""
-        prompt = f"""Create SEO elements for a blog post titled "{title}".
+        prompt = """Create SEO elements for a blog post titled "{title}".
         
         Content preview: {content_preview}
         
@@ -134,13 +136,15 @@ class BlogWriter:
         response = self.client.chat(prompt)
         return response
 
-    def full_blog_post(self, topic, target_audience="general readers", word_count=1000):
+    def full_blog_post(
+        self, topic, target_audience="general readers", word_count=1000
+    ):
         """Generate a complete blog post."""
         print(f"🚀 Generating blog post about '{topic}'...")
 
         # Step 1: Generate title ideas
         print("📝 Generating title ideas...")
-        title_prompt = f"""Create 3 SEO-friendly, engaging blog post titles about "{topic}" 
+        title_prompt = """Create 3 SEO-friendly, engaging blog post titles about "{topic}" 
         for {target_audience}. Make them clickable and valuable."""
 
         titles_response = self.client.chat(title_prompt)
@@ -174,7 +178,7 @@ class BlogWriter:
             f"Benefits of {topic}",
             f"How to Get Started with {topic}",
             f"Best Practices for {topic}",
-            f"Common Mistakes to Avoid",
+            "Common Mistakes to Avoid",
         ]
 
         for section_topic in section_topics:
@@ -197,7 +201,7 @@ class BlogWriter:
         seo_elements = self.generate_seo_elements(title, content_preview)
 
         # Combine everything
-        full_post = f"""# {title}
+        full_post = """# {title}
 
 {intro}
 
@@ -293,7 +297,9 @@ def main():
                     print(f"\n🚀 Creating full blog post about '{topic}'...")
                     print("This may take a few minutes...\n")
 
-                    blog_post = writer.full_blog_post(topic, audience, word_count)
+                    blog_post = writer.full_blog_post(
+                        topic, audience, word_count
+                    )
 
                     print("✅ Blog post completed!")
 

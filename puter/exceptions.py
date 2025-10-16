@@ -1,3 +1,6 @@
+"""Custom exceptions for Puter Python SDK."""
+
+
 class PuterError(Exception):
     """Base exception for Puter.js API errors."""
 

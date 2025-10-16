@@ -3,8 +3,6 @@
 import os
 from unittest.mock import patch
 
-import pytest
-
 from puter.config import PuterConfig, config
 
 
@@ -52,7 +50,7 @@ class TestPuterConfig:
     def test_update_method(self):
         """Test configuration update method."""
         cfg = PuterConfig()
-        original_timeout = cfg.timeout
+        # original_timeout = cfg.timeout
 
         cfg.update(timeout=120, max_retries=10)
 
@@ -104,7 +102,7 @@ class TestGlobalConfig:
 
     def test_global_config_modification(self):
         """Test modifying global config."""
-        original_timeout = config.timeout
+        # original_timeout = config.timeout
 
         try:
             config.update(timeout=999)

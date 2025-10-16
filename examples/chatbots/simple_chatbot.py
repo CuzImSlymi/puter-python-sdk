@@ -16,7 +16,9 @@ from puter import PuterAI
 class SimpleChatbot:
     """A simple chatbot with personality and memory."""
 
-    def __init__(self, name="Puter Assistant", personality="helpful and friendly"):
+    def __init__(
+        self, name="Puter Assistant", personality="helpful and friendly"
+    ):
         self.name = name
         self.personality = personality
         self.client = None
@@ -35,7 +37,7 @@ class SimpleChatbot:
         self.client.login()
 
         # Set personality with system message
-        personality_prompt = f"""You are {self.name}, a {self.personality} AI assistant. 
+        personality_prompt = """You are {self.name}, a {self.personality} AI assistant. 
         Key traits:
         - Always be helpful and positive
         - Remember context from our conversation
@@ -52,17 +54,25 @@ class SimpleChatbot:
     def chat(self, message):
         """Send a message and get response."""
         if not self.client:
-            raise RuntimeError("Chatbot not initialized. Call initialize() first.")
+            raise RuntimeError(
+                "Chatbot not initialized. Call initialize() first."
+            )
 
         # Add timestamp and user context
-        context_message = f"[{datetime.now().strftime('%H:%M')}] User: {message}"
+        context_message = (
+            f"[{datetime.now().strftime('%H:%M')}] User: {message}"
+        )
 
         # Get AI response
         response = self.client.chat(context_message)
 
         # Store conversation
         self.conversation_history.append(
-            {"timestamp": datetime.now().isoformat(), "user": message, "bot": response}
+            {
+                "timestamp": datetime.now().isoformat(),
+                "user": message,
+                "bot": response,
+            }
         )
 
         return response
@@ -72,7 +82,7 @@ class SimpleChatbot:
         if not self.conversation_history:
             return "No conversation yet."
 
-        summary_prompt = f"""Please provide a brief summary of our conversation so far. 
+        summary_prompt = """Please provide a brief summary of our conversation so far. 
         Focus on the main topics discussed and any important information shared.
         Keep it to 2-3 sentences."""
 
@@ -126,7 +136,9 @@ def main():
         user_name = input("What's your name? ").strip()
         if user_name:
             bot.user_name = user_name
-            greeting = bot.chat(f"Hi! My name is {user_name}. Nice to meet you!")
+            greeting = bot.chat(
+                f"Hi! My name is {user_name}. Nice to meet you!"
+            )
             print(f"\n{bot.name}: {greeting}")
         else:
             greeting = bot.chat(
@@ -181,7 +193,9 @@ def main():
                 print(f"\n{bot.name}: {response}")
 
             except KeyboardInterrupt:
-                print(f"\n\n{bot.name}: Goodbye! It was nice chatting with you! 👋")
+                print(
+                    f"\n\n{bot.name}: Goodbye! It was nice chatting with you! 👋"
+                )
                 break
             except Exception as e:
                 print(f"\n❌ Error: {e}")

@@ -1,10 +1,14 @@
+"""Test script for Puter Python SDK."""
+
 from puter import PuterAI, PuterAPIError, PuterAuthError
 
 
 def main():
     print("\n--- Puter.js AI Python SDK Test Script ---")
     print("This script allows you to interact with Puter.js AI models.")
-    print("Your credentials are used only for this session and are not stored.")
+    print(
+        "Your credentials are used only for this session and are not stored."
+    )
 
     username = input("Enter your Puter.js Username: ")
     password = input("Enter your Puter.js Password: ")

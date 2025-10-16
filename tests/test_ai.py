@@ -1,10 +1,7 @@
 """Tests for the PuterAI class."""
 
-import asyncio
-import json
 from unittest.mock import AsyncMock, Mock, patch
 
-import aiohttp
 import pytest
 
 from puter import PuterAI, PuterAPIError, PuterAuthError
@@ -15,7 +12,7 @@ class TestPuterAIInitialization:
 
     def test_init_with_credentials(self):
         """Test initialization with username and password."""
-        client = PuterAI(username="test_user", password="test_pass")
+        # client = PuterAI(username="test_user", password="test_pass")
         assert client._username == "test_user"
         assert client._password == "test_pass"
         assert client._token is None
@@ -24,14 +21,14 @@ class TestPuterAIInitialization:
 
     def test_init_with_token(self):
         """Test initialization with existing token."""
-        client = PuterAI(token="existing_token")
+        # client = PuterAI(token="existing_token")
         assert client._token == "existing_token"
         assert client._username is None
         assert client._password is None
 
     def test_init_with_config_overrides(self):
         """Test initialization with configuration overrides."""
-        client = PuterAI(username="test", password="test", timeout=60, max_retries=5)
+        # client = PuterAI(username="test", password="test", timeout=60, max_retries=5)
         from puter.config import config
 
         assert config.timeout == 60
@@ -47,7 +44,9 @@ class TestPuterAIInitialization:
 class TestPuterAIAuthentication:
     """Test PuterAI authentication methods."""
 
-    def test_login_success(self, puter_client, mock_requests, sample_login_response):
+    def test_login_success(
+        self, puter_client, mock_requests, sample_login_response
+    ):
         """Test successful login."""
         mock_response = Mock()
         mock_response.json.return_value = sample_login_response
@@ -60,7 +59,9 @@ class TestPuterAIAuthentication:
         assert puter_client._token == "test_token_12345"
         mock_requests.post.assert_called_once()
 
-    def test_login_failure_invalid_credentials(self, puter_client, mock_requests):
+    def test_login_failure_invalid_credentials(
+        self, puter_client, mock_requests
+    ):
         """Test login failure with invalid credentials."""
         mock_response = Mock()
         mock_response.json.return_value = {
@@ -75,8 +76,10 @@ class TestPuterAIAuthentication:
 
     def test_login_no_credentials(self):
         """Test login without credentials raises error."""
-        client = PuterAI()
-        with pytest.raises(PuterAuthError, match="Username and password must be set"):
+        # client = PuterAI()
+        with pytest.raises(
+            PuterAuthError, match="Username and password must be set"
+        ):
             client.login()
 
     def test_login_network_error(self, puter_client, mock_requests):
@@ -88,7 +91,9 @@ class TestPuterAIAuthentication:
 
     @pytest.mark.skip(reason="Async test mocking issues - needs fix")
     @pytest.mark.asyncio
-    async def test_async_login_success(self, puter_client, sample_login_response):
+    async def test_async_login_success(
+        self, puter_client, sample_login_response
+    ):
         """Test successful async login."""
         with patch("puter.ai.aiohttp.ClientSession") as mock_session_class:
             # Create mock response
@@ -102,13 +107,17 @@ class TestPuterAIAuthentication:
             mock_session.request.return_value.__aenter__ = AsyncMock(
                 return_value=mock_response
             )
-            mock_session.request.return_value.__aexit__ = AsyncMock(return_value=None)
+            mock_session.request.return_value.__aexit__ = AsyncMock(
+                return_value=None
+            )
 
             # Setup session class mock
             mock_session_class.return_value.__aenter__ = AsyncMock(
                 return_value=mock_session
             )
-            mock_session_class.return_value.__aexit__ = AsyncMock(return_value=None)
+            mock_session_class.return_value.__aexit__ = AsyncMock(
+                return_value=None
+            )
 
             result = await puter_client.async_login()
 
@@ -130,8 +139,12 @@ class TestPuterAIChat:
 
         response = authenticated_client.chat("Hello!")
 
-        assert response == "Hello! I'm an AI assistant. How can I help you today?"
-        assert len(authenticated_client.chat_history) == 2  # User message + AI response
+        assert (
+            response == "Hello! I'm an AI assistant. How can I help you today?"
+        )
+        assert (
+            len(authenticated_client.chat_history) == 2
+        )  # User message + AI response
 
     def test_chat_not_authenticated(self, puter_client):
         """Test chat without authentication raises error."""
@@ -164,7 +177,9 @@ class TestPuterAIChat:
 
     @pytest.mark.skip(reason="Async test mocking issues - needs fix")
     @pytest.mark.asyncio
-    async def test_async_chat_success(self, authenticated_client, sample_chat_response):
+    async def test_async_chat_success(
+        self, authenticated_client, sample_chat_response
+    ):
         """Test successful async chat."""
         with patch("puter.ai.aiohttp.ClientSession") as mock_session_class:
             # Create mock response
@@ -178,17 +193,24 @@ class TestPuterAIChat:
             mock_session.request.return_value.__aenter__ = AsyncMock(
                 return_value=mock_response
             )
-            mock_session.request.return_value.__aexit__ = AsyncMock(return_value=None)
+            mock_session.request.return_value.__aexit__ = AsyncMock(
+                return_value=None
+            )
 
             # Setup session class mock
             mock_session_class.return_value.__aenter__ = AsyncMock(
                 return_value=mock_session
             )
-            mock_session_class.return_value.__aexit__ = AsyncMock(return_value=None)
+            mock_session_class.return_value.__aexit__ = AsyncMock(
+                return_value=None
+            )
 
             response = await authenticated_client.async_chat("Hello!")
 
-            assert response == "Hello! I'm an AI assistant. How can I help you today?"
+            assert (
+                response
+                == "Hello! I'm an AI assistant. How can I help you today?"
+            )
 
 
 class TestPuterAIModels:
@@ -214,7 +236,9 @@ class TestPuterAIModels:
         """Test setting an invalid model."""
         result = puter_client.set_model("invalid-model-name")
         assert result is False
-        assert puter_client.current_model == "claude-opus-4"  # Should remain unchanged
+        assert (
+            puter_client.current_model == "claude-opus-4"
+        )  # Should remain unchanged
 
     def test_get_driver_for_model(self, puter_client):
         """Test getting driver for a model."""
