@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Model Switching Example - Puter Python SDK
+"""Model Switching Example - Puter Python SDK.
 
 This example demonstrates how to switch between different AI models
 and compare their responses to the same prompts.

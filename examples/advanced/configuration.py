@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Advanced Configuration Example - Puter Python SDK
+"""Advanced Configuration Example - Puter Python SDK.
 
 Demonstrates all configuration options, environment variables,
 and advanced settings for production usage.

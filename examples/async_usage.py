@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Async Usage Example - Puter Python SDK
+"""Async Usage Example - Puter Python SDK.
 
 This example demonstrates how to use the async/await features of the Puter SDK
 for better performance in concurrent applications.

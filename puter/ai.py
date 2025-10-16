@@ -8,7 +8,6 @@ from typing import Dict, List, Optional
 
 import aiohttp
 import requests
-
 from asyncio_throttle import Throttler
 
 from .config import config

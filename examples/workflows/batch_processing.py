@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Batch Processing Example - Puter Python SDK
+"""Batch Processing Example - Puter Python SDK.
 
 Efficiently process multiple tasks using AI with rate limiting, error handling,
 and progress tracking. Perfect for content analysis, data processing, and automation.
@@ -20,6 +19,7 @@ class BatchProcessor:
     """AI-powered batch processing with progress tracking."""
 
     def __init__(self, rate_limit_requests=5, rate_limit_period=60):
+        """Initialize the batch processor with rate limiting settings."""
         self.client = None
         self.results = []
         self.errors = []

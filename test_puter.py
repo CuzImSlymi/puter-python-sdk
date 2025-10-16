@@ -4,6 +4,7 @@ from puter import PuterAI, PuterAPIError, PuterAuthError
 
 
 def main():
+    """Main function to test the Puter AI SDK interactively."""
     print("\n--- Puter.js AI Python SDK Test Script ---")
     print("This script allows you to interact with Puter.js AI models.")
     print(

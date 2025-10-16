@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Blog Writer Example - Puter Python SDK
+"""Blog Writer Example - Puter Python SDK.
 
 Automated blog post generation with structure, SEO optimization, and multiple formats.
 Perfect for content creators, marketers, and bloggers.
@@ -17,6 +16,7 @@ class BlogWriter:
     """AI-powered blog post generator."""
 
     def __init__(self):
+        """Initialize the blog writer."""
         self.client = None
 
     def initialize(self, username=None, password=None):

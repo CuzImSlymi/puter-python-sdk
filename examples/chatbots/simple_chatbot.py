@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Simple Chatbot Example - Puter Python SDK
+"""Simple Chatbot Example - Puter Python SDK.
 
 A basic interactive chatbot with personality and conversation management.
 Perfect for building customer service bots, assistants, or companions.
@@ -19,6 +18,7 @@ class SimpleChatbot:
     def __init__(
         self, name="Puter Assistant", personality="helpful and friendly"
     ):
+        """Initialize the chatbot with name and personality."""
         self.name = name
         self.personality = personality
         self.client = None
