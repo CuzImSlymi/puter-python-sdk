@@ -12,7 +12,6 @@ from datetime import datetime
 
 from puter import PuterAI
 
-
 class BlogWriter:
     """AI-powered blog post generator."""
 
@@ -32,31 +31,33 @@ class BlogWriter:
 
     def generate_blog_ideas(self, topic, count=5):
         """Generate blog post ideas for a topic."""
-        prompt = """Generate {count} engaging blog post ideas about "{topic}". 
+        prompt = """Generate {count} engaging blog post ideas about "{topic}".
         For each idea, provide:
         1. A catchy title
         2. A brief description (1-2 sentences)
         3. Target audience
-        
+
         Format as a numbered list. Make the titles SEO-friendly and engaging."""
 
         response = self.client.chat(prompt)
         return response
 
-    def create_outline(self, title, target_audience="general readers", word_count=1000):
+    def create_outline(
+        self, title, target_audience="general readers", word_count=1000
+    ):
         """Create a detailed blog post outline."""
         prompt = """Create a detailed outline for a blog post titled "{title}".
-        
+
         Target audience: {target_audience}
         Target word count: {word_count} words
-        
+
         Include:
         1. Hook/Introduction
         2. Main sections with subsections
         3. Key points to cover in each section
         4. Call-to-action ideas
         5. SEO keywords to focus on
-        
+
         Make it engaging and well-structured."""
 
         response = self.client.chat(prompt)
@@ -65,15 +66,15 @@ class BlogWriter:
     def write_introduction(self, title, outline_context=""):
         """Write an engaging introduction."""
         prompt = """Write an engaging introduction for a blog post titled "{title}".
-        
+
         {f"Context from outline: {outline_context}" if outline_context else ""}
-        
+
         The introduction should:
         - Hook the reader immediately
         - Clearly state what they'll learn
         - Be 150-200 words
         - Include a compelling reason to keep reading
-        
+
         Write in a conversational, engaging tone."""
 
         response = self.client.chat(prompt)
@@ -82,17 +83,17 @@ class BlogWriter:
     def write_section(self, section_title, context, word_count=300):
         """Write a detailed section of the blog post."""
         prompt = """Write a detailed section for a blog post with the heading "{section_title}".
-        
+
         Context: {context}
         Target length: ~{word_count} words
-        
+
         Requirements:
         - Provide valuable, actionable information
         - Use examples and practical tips
         - Include subheadings if needed
         - Write in an engaging, conversational tone
         - Make it scannable with bullet points or numbered lists where appropriate
-        
+
         Focus on delivering real value to the reader."""
 
         response = self.client.chat(prompt)
@@ -101,16 +102,16 @@ class BlogWriter:
     def write_conclusion(self, title, main_points):
         """Write a compelling conclusion with call-to-action."""
         prompt = """Write a compelling conclusion for a blog post titled "{title}".
-        
+
         Main points covered: {main_points}
-        
+
         The conclusion should:
         - Summarize key takeaways
         - Reinforce the main message
         - Include a strong call-to-action
         - Be 100-150 words
         - Leave the reader feeling inspired or motivated to act
-        
+
         End with an engaging question or thought-provoking statement."""
 
         response = self.client.chat(prompt)
@@ -119,28 +120,30 @@ class BlogWriter:
     def generate_seo_elements(self, title, content_preview):
         """Generate SEO elements for the blog post."""
         prompt = """Create SEO elements for a blog post titled "{title}".
-        
+
         Content preview: {content_preview}
-        
+
         Generate:
         1. Meta description (150-160 characters)
         2. 5-7 relevant keywords
         3. 3 alternative title suggestions for A/B testing
         4. Social media preview text (120 characters)
         5. Suggested tags/categories
-        
+
         Focus on search intent and user value."""
 
         response = self.client.chat(prompt)
         return response
 
-    def full_blog_post(self, topic, target_audience="general readers", word_count=1000):
+    def full_blog_post(
+        self, topic, target_audience="general readers", word_count=1000
+    ):
         """Generate a complete blog post."""
         print(f"🚀 Generating blog post about '{topic}'...")
 
         # Step 1: Generate title ideas
         print("📝 Generating title ideas...")
-        title_prompt = """Create 3 SEO-friendly, engaging blog post titles about "{topic}" 
+        title_prompt = """Create 3 SEO-friendly, engaging blog post titles about "{topic}"
         for {target_audience}. Make them clickable and valuable."""
 
         titles_response = self.client.chat(title_prompt)
@@ -230,7 +233,6 @@ class BlogWriter:
 
         return filename
 
-
 def main():
     """Interactive blog writer."""
     print("✍️ AI Blog Writer - Puter Python SDK")
@@ -293,7 +295,9 @@ def main():
                     print(f"\n🚀 Creating full blog post about '{topic}'...")
                     print("This may take a few minutes...\n")
 
-                    blog_post = writer.full_blog_post(topic, audience, word_count)
+                    blog_post = writer.full_blog_post(
+                        topic, audience, word_count
+                    )
 
                     print("✅ Blog post completed!")
 
@@ -329,7 +333,6 @@ def main():
         print("\nMake sure you have:")
         print("• Valid Puter.js credentials")
         print("• Internet connection")
-
 
 if __name__ == "__main__":
     main()

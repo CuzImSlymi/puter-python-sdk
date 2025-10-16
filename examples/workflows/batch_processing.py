@@ -15,7 +15,6 @@ from typing import Any, Dict, List
 
 from puter import PuterAI
 
-
 class BatchProcessor:
     """AI-powered batch processing with progress tracking."""
 
@@ -43,7 +42,9 @@ class BatchProcessor:
         )
         self.client.login()
 
-    def process_sentiment_analysis(self, texts: List[str]) -> List[Dict[str, Any]]:
+    def process_sentiment_analysis(
+        self, texts: List[str]
+    ) -> List[Dict[str, Any]]:
         """Analyze sentiment for multiple texts."""
         print(f"🎭 Analyzing sentiment for {len(texts)} texts...")
 
@@ -55,9 +56,9 @@ class BatchProcessor:
                 2. Confidence score (0-100%)
                 3. Key emotions detected
                 4. Brief explanation (1 sentence)
-                
+
                 Text: "{text}"
-                
+
                 Format as JSON: {{"sentiment": "", "confidence": 0, "emotions": [], "explanation": ""}}"""
 
                 response = self.client.chat(prompt)
@@ -119,11 +120,11 @@ class BatchProcessor:
         results = []
         for i, text in enumerate(texts, 1):
             try:
-                prompt = """Summarize this text in exactly {max_length} words or less. 
+                prompt = """Summarize this text in exactly {max_length} words or less.
                 Keep the key information and main points.
-                
+
                 Text: "{text}"
-                
+
                 Summary:"""
 
                 response = self.client.chat(prompt)
@@ -165,11 +166,11 @@ class BatchProcessor:
         results = []
         for i, text in enumerate(texts, 1):
             try:
-                prompt = """Translate this text to {target_language}. 
+                prompt = """Translate this text to {target_language}.
                 Maintain the original meaning and tone.
-                
+
                 Text: "{text}"
-                
+
                 Translation:"""
 
                 response = self.client.chat(prompt)
@@ -208,7 +209,7 @@ class BatchProcessor:
         async def process_single(text, index):
             try:
                 if task_type == "sentiment":
-                    prompt = """Analyze sentiment: "{text}" 
+                    prompt = """Analyze sentiment: "{text}"
                     Return JSON: {{"sentiment": "positive/negative/neutral", "score": 0.0}}"""
                 elif task_type == "summary":
                     prompt = """Summarize in 50 words: "{text}"""
@@ -250,7 +251,9 @@ class BatchProcessor:
         )
         return successful_results
 
-    def save_results(self, results: List[Dict[str, Any]], filename=None, format="json"):
+    def save_results(
+        self, results: List[Dict[str, Any]], filename=None, format="json"
+    ):
         """Save processing results to file."""
         if not filename:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -293,7 +296,6 @@ class BatchProcessor:
             / max(self.processed_count, 1)
             * 100,
         }
-
 
 def main():
     """Interactive batch processing demo."""
@@ -340,10 +342,14 @@ def main():
                     print(f"\n💾 Results saved to {filename}")
 
                     stats = processor.get_stats()
-                    print(f"📈 Stats: {stats['success_rate']:.1f}% success rate")
+                    print(
+                        f"📈 Stats: {stats['success_rate']:.1f}% success rate"
+                    )
 
             elif choice == "2":
-                print(f"\n📝 Processing {len(sample_texts)} texts for summarization...")
+                print(
+                    f"\n📝 Processing {len(sample_texts)} texts for summarization..."
+                )
                 results = processor.process_text_summarization(
                     sample_texts, max_length=30
                 )
@@ -354,9 +360,12 @@ def main():
 
             elif choice == "3":
                 language = (
-                    input("Target language (default: Spanish): ").strip() or "Spanish"
+                    input("Target language (default: Spanish): ").strip()
+                    or "Spanish"
                 )
-                print(f"\n🌍 Translating {len(sample_texts)} texts to {language}...")
+                print(
+                    f"\n🌍 Translating {len(sample_texts)} texts to {language}..."
+                )
                 results = processor.process_translation(sample_texts, language)
 
                 if results:
@@ -366,7 +375,9 @@ def main():
             elif choice == "4":
                 print("\n🚀 Async processing demo...")
                 results = asyncio.run(
-                    processor.async_batch_process(sample_texts[:4], "sentiment")
+                    processor.async_batch_process(
+                        sample_texts[:4], "sentiment"
+                    )
                 )
 
                 if results:
@@ -379,13 +390,19 @@ def main():
                     with open(filename, "r", encoding="utf-8") as f:
                         if filename.endswith(".csv"):
                             reader = csv.reader(f)
-                            texts = [row[0] for row in reader if row]  # First column
+                            texts = [
+                                row[0] for row in reader if row
+                            ]  # First column
                         else:
-                            texts = [line.strip() for line in f if line.strip()]
+                            texts = [
+                                line.strip() for line in f if line.strip()
+                            ]
 
                     print(f"📁 Loaded {len(texts)} texts from {filename}")
                     task = (
-                        input("Task (sentiment/summary/translation): ").strip().lower()
+                        input("Task (sentiment/summary/translation): ")
+                        .strip()
+                        .lower()
                     )
 
                     if task == "sentiment":
@@ -422,7 +439,6 @@ def main():
 
     except Exception as e:
         print(f"❌ Error: {e}")
-
 
 if __name__ == "__main__":
     main()

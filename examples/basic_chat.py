@@ -60,7 +60,9 @@ def main():
 
             # Send message and get response
             response = client.chat(prompt)
-            print(f"AI: {response[:200]}{'...' if len(response) > 200 else ''}")
+            print(
+                f"AI: {response[:200]}{'...' if len(response) > 200 else ''}"
+            )
 
         # Interactive mode
         print("\n🎮 Interactive mode - Type 'quit' to exit")

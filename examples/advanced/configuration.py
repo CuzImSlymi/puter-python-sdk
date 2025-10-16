@@ -8,7 +8,7 @@ and advanced settings for production usage.
 
 import os
 
-from puter import PuterAI, PuterConfig, config
+from puter import PuterConfig, config
 
 
 def demonstrate_env_config():
@@ -114,7 +114,9 @@ def demonstrate_config_profiles():
             print(f"    {key}: {value}")
 
         # Show how to apply profile
-        print(f"  Usage: PuterAI(username='...', password='...', **{settings})")
+        print(
+            f"  Usage: PuterAI(username='...', password='...', **{settings})"
+        )
 
 
 def demonstrate_monitoring_config():
