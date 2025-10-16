@@ -102,7 +102,7 @@ class TestGlobalConfig:
 
     def test_global_config_modification(self):
         """Test modifying global config."""
-        # original_timeout = config.timeout
+        original_timeout = config.timeout
 
         try:
             config.update(timeout=999)

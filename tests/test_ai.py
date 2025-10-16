@@ -12,7 +12,7 @@ class TestPuterAIInitialization:
 
     def test_init_with_credentials(self):
         """Test initialization with username and password."""
-        # client = PuterAI(username="test_user", password="test_pass")
+        client = PuterAI(username="test_user", password="test_pass")
         assert client._username == "test_user"
         assert client._password == "test_pass"
         assert client._token is None
@@ -21,14 +21,14 @@ class TestPuterAIInitialization:
 
     def test_init_with_token(self):
         """Test initialization with existing token."""
-        # client = PuterAI(token="existing_token")
+        client = PuterAI(token="existing_token")
         assert client._token == "existing_token"
         assert client._username is None
         assert client._password is None
 
     def test_init_with_config_overrides(self):
         """Test initialization with configuration overrides."""
-        # client = PuterAI(username="test", password="test", timeout=60, max_retries=5)
+        client = PuterAI(username="test", password="test", timeout=60, max_retries=5)
         from puter.config import config
 
         assert config.timeout == 60
@@ -76,7 +76,7 @@ class TestPuterAIAuthentication:
 
     def test_login_no_credentials(self):
         """Test login without credentials raises error."""
-        # client = PuterAI()
+        client = PuterAI()
         with pytest.raises(
             PuterAuthError, match="Username and password must be set"
         ):
