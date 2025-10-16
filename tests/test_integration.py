@@ -168,9 +168,7 @@ class TestPuterAIStressTests:
 
         # Simulate large chat history
         for i in range(1000):
-            client.chat_history.append(
-                {"role": "user", "content": f"Message {i}"}
-            )
+            client.chat_history.append({"role": "user", "content": f"Message {i}"})
             client.chat_history.append(
                 {"role": "assistant", "content": f"Response {i}"}
             )

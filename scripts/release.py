@@ -196,9 +196,7 @@ def main():
     """Main release function."""
     parser = argparse.ArgumentParser(description="Release automation script")
     parser.add_argument("version", help="New version number (e.g., 1.0.0)")
-    parser.add_argument(
-        "--skip-tests", action="store_true", help="Skip running tests"
-    )
+    parser.add_argument("--skip-tests", action="store_true", help="Skip running tests")
     parser.add_argument(
         "--skip-build", action="store_true", help="Skip building package"
     )
@@ -253,9 +251,7 @@ def main():
                 "The GitHub Actions workflow will handle PyPI publishing and GitHub release creation."
             )
         else:
-            print(
-                "Changes committed and tagged locally. Push manually when ready."
-            )
+            print("Changes committed and tagged locally. Push manually when ready.")
 
     print("Release process completed!")
 

@@ -8,9 +8,7 @@ from setuptools import find_packages, setup
 # Read version from package
 def get_version():
     here = os.path.abspath(os.path.dirname(__file__))
-    with open(
-        os.path.join(here, "puter", "__init__.py"), encoding="utf-8"
-    ) as f:
+    with open(os.path.join(here, "puter", "__init__.py"), encoding="utf-8") as f:
         for line in f:
             if line.startswith("__version__"):
                 return line.split("=")[1].strip().strip('"').strip("'")

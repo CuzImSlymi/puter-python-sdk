@@ -78,17 +78,17 @@ class TestCoverageBoost:
     def test_login_retry_logic(self, mock_post):
         """Test login retry logic on failure."""
         client = PuterAI(username="test", password="test")
-        
+
         # First call fails, second succeeds
         mock_response = Mock()
         mock_response.json.return_value = {"proceed": True, "token": "test_token"}
         mock_response.raise_for_status.return_value = None
-        
+
         mock_post.side_effect = [
             Exception("Network error"),  # First attempt fails
             mock_response,  # Second attempt succeeds
         ]
-        
+
         result = client.login()
         assert result is True
         assert mock_post.call_count == 2
@@ -98,29 +98,32 @@ class TestCoverageBoost:
         """Test chat error handling."""
         client = PuterAI(username="test", password="test")
         client._token = "test_token"
-        
+
         # Simulate API error
         mock_post.side_effect = Exception("API Error")
-        
+
         with pytest.raises(PuterAPIError):
             client.chat("Hello")
 
     def test_available_models_json_file_path(self):
         """Test that the models JSON file exists."""
-        models_file = os.path.join(os.path.dirname(__file__), "..", "puter", "available_models.json")
+        models_file = os.path.join(
+            os.path.dirname(__file__), "..", "puter", "available_models.json"
+        )
         assert os.path.exists(models_file), "Models file should exist"
-        
-        with open(models_file, 'r') as f:
+
+        with open(models_file, "r") as f:
             models_data = json.load(f)
-        
+
         assert isinstance(models_data, dict)
         assert len(models_data) > 0
 
     def test_config_update_in_init(self):
         """Test that config is updated during initialization."""
         from puter.config import config
+
         original_timeout = config.timeout
-        
+
         try:
             client = PuterAI(username="test", password="test", timeout=999)
             assert config.timeout == 999
@@ -139,12 +142,12 @@ class TestCoverageBoost:
     def test_login_with_invalid_response(self, mock_post):
         """Test login with invalid JSON response."""
         client = PuterAI(username="test", password="test")
-        
+
         mock_response = Mock()
         mock_response.json.side_effect = json.JSONDecodeError("Invalid JSON", "", 0)
         mock_response.raise_for_status.return_value = None
         mock_post.return_value = mock_response
-        
+
         with pytest.raises(PuterAuthError):
             client.login()
 
