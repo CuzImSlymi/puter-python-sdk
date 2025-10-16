@@ -215,7 +215,7 @@ import asyncio
 async def fast_processing():
     client = PuterAI(username="user", password="pass")
     await client.async_login()
-    
+
     # Process multiple requests concurrently
     tasks = [client.async_chat(prompt) for prompt in prompts]
     responses = await asyncio.gather(*tasks)
@@ -398,18 +398,18 @@ def minimal_test():
     try:
         client = PuterAI(username="your_username", password="your_password")
         print("1. ✅ Client created")
-        
+
         success = client.login()
         print(f"2. {'✅' if success else '❌'} Login: {success}")
-        
+
         models = client.get_available_models()
         print(f"3. ✅ Models loaded: {len(models)}")
-        
+
         response = client.chat("Hello")
         print(f"4. ✅ Chat response: {response[:50]}...")
-        
+
         return True
-        
+
     except Exception as e:
         print(f"❌ Error at step: {e}")
         import traceback
@@ -432,13 +432,13 @@ def system_info():
     print(f"  Python version: {sys.version}")
     print(f"  Platform: {platform.platform()}")
     print(f"  Architecture: {platform.architecture()}")
-    
+
     try:
         import puter
         print(f"  Puter SDK version: {puter.__version__}")
     except ImportError:
         print("  Puter SDK: Not installed")
-    
+
     # Check dependencies
     deps = ['requests', 'aiohttp', 'asyncio_throttle']
     for dep in deps:
@@ -507,7 +507,7 @@ A: Yes, but each model switch creates a separate conversation context:
 
 ```python
 client.chat("Hello")  # Using default model
-client.set_model("gpt-4")  
+client.set_model("gpt-4")
 client.chat("Continue conversation")  # GPT-4 sees full history
 
 # To start fresh with new model:
@@ -528,7 +528,7 @@ def smart_history_management(client, new_prompt):
         important_start = client.chat_history[:2]
         recent_context = client.chat_history[-10:]
         client.chat_history = important_start + recent_context
-    
+
     return client.chat(new_prompt)
 ```
 
@@ -564,26 +564,26 @@ def save_conversation(client, filename=None):
     if not filename:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"conversation_{timestamp}.json"
-    
+
     data = {
         "timestamp": datetime.now().isoformat(),
         "model": client.current_model,
         "history": client.chat_history
     }
-    
+
     with open(filename, 'w') as f:
         json.dump(data, f, indent=2)
-    
+
     return filename
 
 # Load conversation
 def load_conversation(client, filename):
     with open(filename, 'r') as f:
         data = json.load(f)
-    
+
     client.set_model(data["model"])
     client.chat_history = data["history"]
-    
+
     return data["timestamp"]
 
 # Usage

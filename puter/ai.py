@@ -8,6 +8,7 @@ from typing import Dict, List, Optional
 
 import aiohttp
 import requests
+
 from asyncio_throttle import Throttler
 
 from .config import config
@@ -34,8 +35,8 @@ class PuterAI:
         Args:
             username (Optional[str]): Your Puter.js username.
             password (Optional[str]): Your Puter.js password.
-            token (Optional[str]): An existing authentication token. If provided,
-                username and password are not needed.
+            token (Optional[str]): An existing authentication token. If
+                provided, username and password are not needed.
             **config_overrides: Override default configuration values.
         """
         self._token = token
@@ -57,7 +58,7 @@ class PuterAI:
         # Get the path to the available_models.json file relative to module
         current_dir = os.path.dirname(__file__)
         models_file = os.path.join(current_dir, "available_models.json")
-        with open(models_file, "r") as f:
+        with open(models_file) as f:
             self.available_models = json.load(f)
 
     def _retry_request(self, request_func, *args, **kwargs):
@@ -292,7 +293,7 @@ class PuterAI:
 
             # More robust response parsing with detailed debugging
             def extract_content(data):
-                """Extract content from various possible response formats"""
+                """Extract content from various possible response formats."""
                 # Check if data has a result field
                 if isinstance(data, dict) and "result" in data:
                     result = data["result"]
@@ -446,7 +447,7 @@ class PuterAI:
 
             # Use the same content extraction logic
             def extract_content(data):
-                """Extract content from various possible response formats"""
+                """Extract content from various possible response formats."""
                 # [Same extraction logic as sync version]
                 if isinstance(data, dict) and "result" in data:
                     result = data["result"]

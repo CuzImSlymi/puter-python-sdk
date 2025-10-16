@@ -18,25 +18,25 @@ jobs:
             python-version: "pypy-3.9"
           - os: ubuntu-latest
             python-version: "pypy-3.10"
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
-    
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -e .[dev]
         pip install -r requirements-dev.txt
-    
+
     - name: Run comprehensive tests
       run: |
         pytest tests/ --cov=puter --cov-report=xml -v --tb=short
-    
+
     - name: Upload coverage
       uses: codecov/codecov-action@v3
       with:
@@ -50,15 +50,15 @@ jobs:
         python-version: ["3.8", "3.12"]
         requests-version: ["2.25.0", "2.31.0"]
         aiohttp-version: ["3.8.0", "3.9.0"]
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
-    
+
     - name: Install specific dependency versions
       run: |
         python -m pip install --upgrade pip
@@ -66,7 +66,7 @@ jobs:
         pip install aiohttp==${{ matrix.aiohttp-version }}
         pip install -e .
         pip install pytest pytest-cov pytest-asyncio
-    
+
     - name: Run compatibility tests
       run: |
         pytest tests/test_ai.py tests/test_config.py -v
@@ -75,24 +75,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-    
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -e .
         pip install safety bandit semgrep
-    
+
     - name: Run comprehensive security audit
       run: |
         safety check --json --output safety-report.json || true
         bandit -r puter/ -f json -o bandit-report.json || true
         semgrep --config=auto --json --output=semgrep-report.json puter/ || true
-    
+
     - name: Upload security reports
       uses: actions/upload-artifact@v4
       with:
@@ -106,59 +106,59 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-    
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -e .
         pip install pytest pytest-benchmark memory-profiler
-    
+
     - name: Run performance benchmarks
       run: |
         mkdir -p tests/benchmarks
-        
+
         # Create comprehensive benchmark test
         cat > tests/benchmarks/test_nightly_performance.py << 'EOF'
         import pytest
         import time
         from puter import PuterAI, PuterConfig
-        
+
         class TestNightlyPerformance:
             def test_client_initialization_benchmark(self, benchmark):
                 def init_client():
                     return PuterAI(username="test", password="test")
                 result = benchmark(init_client)
                 assert result is not None
-            
+
             def test_config_creation_benchmark(self, benchmark):
                 def create_config():
                     return PuterConfig()
                 result = benchmark(create_config)
                 assert result is not None
-            
+
             def test_models_loading_benchmark(self, benchmark):
                 client = PuterAI(username="test", password="test")
                 def load_models():
                     return client.get_available_models()
                 result = benchmark(load_models)
                 assert len(result) > 0
-            
+
             def test_memory_usage_benchmark(self, benchmark):
                 def memory_test():
-                    clients = [PuterAI(username=f"user_{i}", password="test") 
+                    clients = [PuterAI(username=f"user_{i}", password="test")
                               for i in range(50)]
                     return len(clients)
                 result = benchmark(memory_test)
                 assert result == 50
         EOF
-        
+
         pytest tests/benchmarks/test_nightly_performance.py --benchmark-json=nightly-benchmark.json
-    
+
     - name: Upload benchmark results
       uses: actions/upload-artifact@v4
       with:
@@ -169,30 +169,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-    
+
     - name: Check for outdated dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -e .
         pip install pip-check-reqs pipdeptree
-        
+
         echo "=== Dependency Tree ===" > dependency-report.txt
         pipdeptree >> dependency-report.txt
-        
+
         echo -e "\n=== Outdated Packages ===" >> dependency-report.txt
         pip list --outdated >> dependency-report.txt || true
-        
+
         echo -e "\n=== Missing Requirements ===" >> dependency-report.txt
         pip-missing-reqs puter/ >> dependency-report.txt || true
-        
+
         echo -e "\n=== Extra Requirements ===" >> dependency-report.txt
         pip-extra-reqs puter/ >> dependency-report.txt || true
-    
+
     - name: Upload dependency report
       uses: actions/upload-artifact@v4
       with:
@@ -220,7 +220,7 @@ jobs:
         echo "| Performance Benchmarks | ${{ needs.performance-benchmarks.result == 'success' && '✅ Pass' || '❌ Fail' }} |" >> summary.md
         echo "| Dependency Check | ${{ needs.dependency-check.result == 'success' && '✅ Pass' || '❌ Fail' }} |" >> summary.md
         echo "" >> summary.md
-        
+
         if [[ "${{ needs.comprehensive-testing.result }}" != "success" ]] || \
            [[ "${{ needs.compatibility-testing.result }}" != "success" ]] || \
            [[ "${{ needs.security-audit.result }}" != "success" ]] || \
@@ -234,11 +234,11 @@ jobs:
           echo "" >> summary.md
           echo "The project is in good health." >> summary.md
         fi
-        
+
         echo "" >> summary.md
         echo "---" >> summary.md
         echo "*This report was generated by the nightly build workflow.*" >> summary.md
-    
+
     - name: Upload summary
       uses: actions/upload-artifact@v4
       with:

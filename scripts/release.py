@@ -31,7 +31,7 @@ def run_command(cmd, check=True, capture_output=True):
 def get_current_version():
     """Get the current version from __init__.py."""
     init_file = Path("puter") / "__init__.py"
-    with open(init_file, "r") as f:
+    with open(init_file) as f:
         content = f.read()
 
     match = re.search(r'__version__ = ["\']([^"\']+)["\']', content)
@@ -57,7 +57,7 @@ def update_version(new_version):
     ]
 
     for file_path, pattern, replacement in files_to_update:
-        with open(file_path, "r") as f:
+        with open(file_path) as f:
             content = f.read()
 
         if not re.search(pattern, content):
@@ -87,7 +87,7 @@ def update_changelog(version):
         print("Warning: CHANGELOG.md not found")
         return
 
-    with open(changelog_path, "r") as f:
+    with open(changelog_path) as f:
         content = f.read()
 
     # Check if version already exists in changelog

@@ -44,11 +44,11 @@ This directory contains practical examples demonstrating how to use the Puter Py
 2. **Set up authentication:**
    ```python
    from puter import PuterAI
-   
+
    # Method 1: Direct credentials
    client = PuterAI(username="your_username", password="your_password")
    client.login()
-   
+
    # Method 2: Environment variables
    # Set PUTER_USERNAME and PUTER_PASSWORD
    client = PuterAI()

@@ -115,7 +115,7 @@ class TestCoverageBoost:
         )
         assert os.path.exists(models_file), "Models file should exist"
 
-        with open(models_file, "r") as f:
+        with open(models_file) as f:
             models_data = json.load(f)
 
         assert isinstance(models_data, dict)

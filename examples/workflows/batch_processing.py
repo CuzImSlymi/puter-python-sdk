@@ -389,7 +389,7 @@ def main():
             elif choice == "5":
                 filename = input("Enter filename (txt/csv): ").strip()
                 if os.path.exists(filename):
-                    with open(filename, "r", encoding="utf-8") as f:
+                    with open(filename, encoding="utf-8") as f:
                         if filename.endswith(".csv"):
                             reader = csv.reader(f)
                             texts = [

@@ -65,7 +65,7 @@ PuterAI(username=None, password=None, token=None, **config_overrides)
 
 **Parameters:**
 - `username` (str, optional): Your Puter.js username
-- `password` (str, optional): Your Puter.js password  
+- `password` (str, optional): Your Puter.js password
 - `token` (str, optional): Existing authentication token
 - `**config_overrides`: Configuration overrides (see [Configuration](#configuration))
 
@@ -76,7 +76,7 @@ client = PuterAI(username="user", password="pass")
 
 # With configuration overrides
 client = PuterAI(
-    username="user", 
+    username="user",
     password="pass",
     timeout=60,
     max_retries=5,
@@ -178,11 +178,11 @@ import asyncio
 async def main():
     client = PuterAI(username="user", password="pass")
     await client.async_login()
-    
+
     # Single async chat
     response = await client.async_chat("What is AI?")
     print(response)
-    
+
     # Multiple concurrent chats
     tasks = [
         client.async_chat("What is Python?"),
@@ -349,7 +349,7 @@ export PUTER_RATE_LIMIT_PERIOD="60"
 # Override configuration per client
 client = PuterAI(
     username="user",
-    password="pass", 
+    password="pass",
     timeout=90,                    # 90 second timeout
     max_retries=10,               # 10 retry attempts
     rate_limit_requests=50,       # 50 requests
@@ -431,27 +431,27 @@ import time
 
 def robust_chat(client, prompt, max_retries=3):
     """Robust chat with comprehensive error handling."""
-    
+
     for attempt in range(max_retries):
         try:
             return client.chat(prompt)
-            
+
         except PuterAuthError as e:
             print(f"Authentication error: {e}")
             # Re-authentication might be needed
             return None
-            
+
         except PuterAPIError as e:
             print(f"API error (attempt {attempt + 1}): {e}")
             if attempt < max_retries - 1:
                 time.sleep(2 ** attempt)  # Exponential backoff
                 continue
             return None
-            
+
         except Exception as e:
             print(f"Unexpected error: {e}")
             return None
-    
+
     return None
 
 # Usage
@@ -519,18 +519,18 @@ from puter import PuterAI
 async def concurrent_chats():
     client = PuterAI(username="user", password="pass")
     await client.async_login()
-    
+
     # Run multiple chats concurrently
     questions = [
         "What is machine learning?",
-        "What is deep learning?", 
+        "What is deep learning?",
         "What is neural network?",
         "What is artificial intelligence?"
     ]
-    
+
     tasks = [client.async_chat(q) for q in questions]
     responses = await asyncio.gather(*tasks)
-    
+
     for question, response in zip(questions, responses):
         print(f"Q: {question}")
         print(f"A: {response[:100]}...\n")
@@ -572,18 +572,18 @@ from puter.exceptions import PuterAuthError, PuterAPIError
 try:
     client = PuterAI(username="user", password="pass")
     client.login()
-    
+
     response = client.chat("Hello!")
     print(response)
-    
+
 except PuterAuthError as e:
     print(f"Authentication failed: {e}")
     # Handle auth error (retry login, check credentials, etc.)
-    
+
 except PuterAPIError as e:
     print(f"API call failed: {e}")
     # Handle API error (retry, fallback, etc.)
-    
+
 except Exception as e:
     print(f"Unexpected error: {e}")
     # Handle other errors

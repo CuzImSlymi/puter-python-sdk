@@ -173,5 +173,3 @@ We welcome contributions! If you have suggestions, bug reports, or want to contr
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
-
-

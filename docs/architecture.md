@@ -61,17 +61,17 @@ class PuterConfig:
     # API Configuration
     api_base: str
     login_url: str
-    
+
     # Request Configuration
     timeout: int
     max_retries: int
     retry_delay: float
     backoff_factor: float
-    
+
     # Rate Limiting
     rate_limit_requests: int
     rate_limit_period: int
-    
+
     # Default Headers
     headers: Dict[str, str]
 ```

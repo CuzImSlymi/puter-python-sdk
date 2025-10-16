@@ -8,7 +8,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to suggest a new feature! 
+        Thanks for taking the time to suggest a new feature!
         Your ideas help make the Puter Python SDK better for everyone.
 
   - type: checkboxes
@@ -40,7 +40,7 @@ body:
       description: What problem does this feature solve?
       placeholder: |
         Describe the problem or limitation you're facing...
-        
+
         Example: "Currently, there's no way to..."
     validations:
       required: true
@@ -52,7 +52,7 @@ body:
       description: Describe your ideal solution
       placeholder: |
         Describe how you think this feature should work...
-        
+
         Example: "I would like to be able to..."
     validations:
       required: true
@@ -64,7 +64,7 @@ body:
       description: Describe any alternative solutions or workarounds you've considered
       placeholder: |
         Describe any alternative approaches you've thought of...
-        
+
         Example: "I've tried..., but it doesn't work because..."
 
   - type: dropdown
@@ -115,7 +115,7 @@ body:
       render: python
       placeholder: |
         # Example of how you envision the feature working
-        
+
         client = PuterAI(username="...", password="...")
         result = client.new_feature_method(parameter="value")
 

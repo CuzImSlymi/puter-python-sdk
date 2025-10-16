@@ -17,45 +17,45 @@ jobs:
           const issue = context.payload.issue || context.payload.pull_request;
           const isIssue = !!context.payload.issue;
           const isPR = !!context.payload.pull_request;
-          
+
           // Auto-assign based on content
           let assignees = [];
           let labels = [];
-          
+
           const title = issue.title.toLowerCase();
           const body = (issue.body || '').toLowerCase();
           const content = title + ' ' + body;
-          
+
           // Determine labels based on content
           if (content.includes('bug') || content.includes('error') || content.includes('issue')) {
             labels.push('bug');
           }
-          
+
           if (content.includes('feature') || content.includes('enhancement') || content.includes('new')) {
             labels.push('enhancement');
           }
-          
+
           if (content.includes('doc') || content.includes('readme') || content.includes('documentation')) {
             labels.push('documentation');
           }
-          
+
           if (content.includes('test') || content.includes('testing')) {
             labels.push('testing');
           }
-          
+
           if (content.includes('security') || content.includes('vulnerability')) {
             labels.push('security');
             labels.push('priority-high');
           }
-          
+
           if (content.includes('performance') || content.includes('optimization')) {
             labels.push('performance');
           }
-          
+
           if (content.includes('ci') || content.includes('github action') || content.includes('workflow')) {
             labels.push('ci/cd');
           }
-          
+
           // Set priority labels
           if (content.includes('critical') || content.includes('urgent')) {
             labels.push('priority-critical');
@@ -66,39 +66,39 @@ jobs:
           } else {
             labels.push('priority-medium');
           }
-          
+
           // Add type labels
           if (isIssue) {
             labels.push('issue');
           } else if (isPR) {
             labels.push('pull-request');
-            
+
             // Additional PR labels
             if (title.includes('fix') || title.includes('bug')) {
               labels.push('bugfix');
             }
-            
+
             if (title.includes('feat') || title.includes('feature')) {
               labels.push('feature');
             }
-            
+
             if (title.includes('docs') || title.includes('documentation')) {
               labels.push('documentation');
             }
-            
+
             if (title.includes('refactor')) {
               labels.push('refactoring');
             }
-            
+
             if (title.includes('test')) {
               labels.push('testing');
             }
-            
+
             if (title.includes('chore') || title.includes('deps') || title.includes('dependency')) {
               labels.push('maintenance');
             }
           }
-          
+
           // Apply labels
           if (labels.length > 0) {
             await github.rest.issues.addLabels({
@@ -108,10 +108,10 @@ jobs:
               labels: labels
             });
           }
-          
+
           // Add welcome comment for first-time contributors
           const author = issue.user.login;
-          
+
           // Check if this is the user's first contribution
           const contributions = await github.rest.repos.listCommits({
             owner: context.repo.owner,
@@ -119,36 +119,36 @@ jobs:
             author: author,
             per_page: 1
           });
-          
+
           const isFirstContribution = contributions.data.length === 0;
-          
+
           if (isFirstContribution && isPR) {
             const welcomeMessage = `
-            🎉 **Welcome to the Puter Python SDK!** 
-            
+            🎉 **Welcome to the Puter Python SDK!**
+
             Thank you for your first contribution! We appreciate you taking the time to improve our project.
-            
+
             ### What happens next?
-            
+
             1. ✅ Our automated tests will run on your PR
             2. 👀 A maintainer will review your changes
             3. 💬 We may provide feedback or suggestions
             4. 🚀 Once approved, your changes will be merged!
-            
+
             ### Guidelines
-            
+
             - Make sure all tests pass
             - Follow our coding standards
             - Update documentation if needed
             - Be responsive to feedback
-            
+
             Feel free to ask questions in the comments if you need any help!
-            
+
             ---
-            
+
             *This message was automatically generated.*
             `;
-            
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -156,34 +156,34 @@ jobs:
               body: welcomeMessage
             });
           }
-          
+
           if (isFirstContribution && isIssue) {
             const welcomeMessage = `
             👋 **Welcome to the Puter Python SDK!**
-            
+
             Thank you for reporting this issue! We appreciate community feedback to help improve our project.
-            
+
             ### What happens next?
-            
+
             1. 🏷️ We've automatically labeled your issue
             2. 👀 A maintainer will triage and respond
             3. 🔍 We may ask for additional information
             4. 🛠️ We'll work on addressing the issue
-            
+
             ### To help us help you
-            
+
             Please make sure you've included:
             - [ ] Clear description of the issue
             - [ ] Steps to reproduce (if applicable)
             - [ ] Expected vs actual behavior
             - [ ] Environment details (Python version, OS, etc.)
             - [ ] Relevant code snippets or error messages
-            
+
             ---
-            
+
             *This message was automatically generated.*
             `;
-            
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -201,9 +201,9 @@ jobs:
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         stale-issue-message: |
-          This issue has been automatically marked as stale because it has not had recent activity. 
+          This issue has been automatically marked as stale because it has not had recent activity.
           It will be closed if no further activity occurs. Thank you for your contributions!
-          
+
           If you believe this issue is still relevant, please:
           - Add a comment explaining why it should remain open
           - Provide any additional context or updates
@@ -211,7 +211,7 @@ jobs:
         stale-pr-message: |
           This pull request has been automatically marked as stale because it has not had recent activity.
           It will be closed if no further activity occurs. Thank you for your contributions!
-          
+
           If you want to continue with this PR, please:
           - Rebase your branch with the latest changes
           - Address any requested changes

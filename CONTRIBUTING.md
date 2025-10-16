@@ -146,7 +146,7 @@ def chat(self, prompt: str, model: Optional[str] = None) -> str:
 
     Args:
         prompt (str): The user's message.
-        model (Optional[str]): The model to use for this specific chat. 
+        model (Optional[str]): The model to use for this specific chat.
             Defaults to current_model.
 
     Returns:
@@ -310,7 +310,7 @@ If applicable, add screenshots or code examples.
 We follow [Semantic Versioning](https://semver.org/):
 
 - **MAJOR** version for incompatible API changes
-- **MINOR** version for backwards-compatible functionality additions  
+- **MINOR** version for backwards-compatible functionality additions
 - **PATCH** version for backwards-compatible bug fixes
 
 ### Release Steps
