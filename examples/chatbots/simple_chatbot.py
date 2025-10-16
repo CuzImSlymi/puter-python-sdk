@@ -12,12 +12,11 @@ from datetime import datetime
 
 from puter import PuterAI
 
+
 class SimpleChatbot:
     """A simple chatbot with personality and memory."""
 
-    def __init__(
-        self, name="Puter Assistant", personality="helpful and friendly"
-    ):
+    def __init__(self, name="Puter Assistant", personality="helpful and friendly"):
         self.name = name
         self.personality = personality
         self.client = None
@@ -53,14 +52,10 @@ class SimpleChatbot:
     def chat(self, message):
         """Send a message and get response."""
         if not self.client:
-            raise RuntimeError(
-                "Chatbot not initialized. Call initialize() first."
-            )
+            raise RuntimeError("Chatbot not initialized. Call initialize() first.")
 
         # Add timestamp and user context
-        context_message = (
-            f"[{datetime.now().strftime('%H:%M')}] User: {message}"
-        )
+        context_message = f"[{datetime.now().strftime('%H:%M')}] User: {message}"
 
         # Get AI response
         response = self.client.chat(context_message)
@@ -116,6 +111,7 @@ class SimpleChatbot:
         self.conversation_history = []
         print("🧹 Conversation history cleared!")
 
+
 def main():
     """Run the interactive chatbot."""
     print("🤖 Simple Chatbot - Puter Python SDK")
@@ -134,9 +130,7 @@ def main():
         user_name = input("What's your name? ").strip()
         if user_name:
             bot.user_name = user_name
-            greeting = bot.chat(
-                f"Hi! My name is {user_name}. Nice to meet you!"
-            )
+            greeting = bot.chat(f"Hi! My name is {user_name}. Nice to meet you!")
             print(f"\n{bot.name}: {greeting}")
         else:
             greeting = bot.chat(
@@ -191,9 +185,7 @@ def main():
                 print(f"\n{bot.name}: {response}")
 
             except KeyboardInterrupt:
-                print(
-                    f"\n\n{bot.name}: Goodbye! It was nice chatting with you! 👋"
-                )
+                print(f"\n\n{bot.name}: Goodbye! It was nice chatting with you! 👋")
                 break
             except Exception as e:
                 print(f"\n❌ Error: {e}")
@@ -218,6 +210,7 @@ def main():
         print("• Set PUTER_USERNAME and PUTER_PASSWORD environment variables")
         print("• A stable internet connection")
         print("• Valid Puter.js credentials")
+
 
 if __name__ == "__main__":
     main()

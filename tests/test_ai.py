@@ -22,6 +22,7 @@ class TestPuterAIInitialization:
     def test_init_with_token(self):
         """Test initialization with existing token."""
         client = PuterAI(token="existing_token")
+        assert client is not None  # Use the client
         assert client._token == "existing_token"
         assert client._username is None
         assert client._password is None

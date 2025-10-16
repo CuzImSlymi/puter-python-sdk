@@ -12,6 +12,7 @@ from datetime import datetime
 
 from puter import PuterAI
 
+
 class BlogWriter:
     """AI-powered blog post generator."""
 
@@ -42,9 +43,7 @@ class BlogWriter:
         response = self.client.chat(prompt)
         return response
 
-    def create_outline(
-        self, title, target_audience="general readers", word_count=1000
-    ):
+    def create_outline(self, title, target_audience="general readers", word_count=1000):
         """Create a detailed blog post outline."""
         prompt = """Create a detailed outline for a blog post titled "{title}".
 
@@ -135,9 +134,7 @@ class BlogWriter:
         response = self.client.chat(prompt)
         return response
 
-    def full_blog_post(
-        self, topic, target_audience="general readers", word_count=1000
-    ):
+    def full_blog_post(self, topic, target_audience="general readers", word_count=1000):
         """Generate a complete blog post."""
         print(f"🚀 Generating blog post about '{topic}'...")
 
@@ -237,6 +234,7 @@ class BlogWriter:
 
         return filename
 
+
 def main():
     """Interactive blog writer."""
     print("✍️ AI Blog Writer - Puter Python SDK")
@@ -299,9 +297,7 @@ def main():
                     print(f"\n🚀 Creating full blog post about '{topic}'...")
                     print("This may take a few minutes...\n")
 
-                    blog_post = writer.full_blog_post(
-                        topic, audience, word_count
-                    )
+                    blog_post = writer.full_blog_post(topic, audience, word_count)
 
                     print("✅ Blog post completed!")
 
@@ -337,6 +333,7 @@ def main():
         print("\nMake sure you have:")
         print("• Valid Puter.js credentials")
         print("• Internet connection")
+
 
 if __name__ == "__main__":
     main()

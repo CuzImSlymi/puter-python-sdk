@@ -115,8 +115,8 @@ jobs:
     
     - name: Check docstring coverage
       run: |
-        docstring-coverage puter/ --badge=docs/docstring-coverage.svg
-        interrogate puter/ -v --ignore-init-method --ignore-init-module
+        mkdir -p docs
+        interrogate puter/ -v --ignore-init-method --ignore-init-module --generate-badge docs/docstring-coverage.svg
     
     - name: Upload documentation artifacts
       uses: actions/upload-artifact@v4
