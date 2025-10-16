@@ -193,11 +193,15 @@ class BlogWriter:
         print("🎯 Writing conclusion...")
         main_points = ", ".join(section_topics)
         conclusion = self.write_conclusion(title, main_points)
+        print("\\n=== CONCLUSION ===")
+        print(conclusion)
 
         # Step 6: Generate SEO elements
         print("🔍 Generating SEO elements...")
         content_preview = intro[:200] + "..."
         seo_elements = self.generate_seo_elements(title, content_preview)
+        print("\\n=== SEO ELEMENTS ===")
+        print(seo_elements)
 
         # Combine everything
         full_post = """# {title}
