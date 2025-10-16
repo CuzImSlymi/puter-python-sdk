@@ -1,5 +1,6 @@
 import os
-from puter import PuterAI, PuterAuthError, PuterAPIError
+
+from puter import PuterAI, PuterAPIError, PuterAuthError
 
 
 def main():

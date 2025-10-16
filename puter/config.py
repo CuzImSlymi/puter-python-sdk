@@ -2,8 +2,8 @@
 Configuration settings for the Puter AI SDK.
 """
 
-from typing import Dict, Any
 import os
+from typing import Any, Dict
 
 
 class PuterConfig:

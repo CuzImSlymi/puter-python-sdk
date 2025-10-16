@@ -7,6 +7,7 @@ and compare their responses to the same prompts.
 """
 
 import os
+
 from puter import PuterAI
 
 

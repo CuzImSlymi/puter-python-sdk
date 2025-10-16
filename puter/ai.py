@@ -10,8 +10,8 @@ import aiohttp
 import requests
 from asyncio_throttle import Throttler
 
-from .exceptions import PuterAuthError, PuterAPIError
 from .config import config
+from .exceptions import PuterAPIError, PuterAuthError
 
 
 class PuterAI:

@@ -35,9 +35,9 @@ jobs:
 import os
 os.makedirs('tests/benchmarks', exist_ok=True)
         
-        # Create basic benchmark test
-        with open('tests/benchmarks/test_performance.py', 'w') as f:
-            f.write('''
+# Create basic benchmark test
+with open('tests/benchmarks/test_performance.py', 'w') as f:
+    f.write('''
 import pytest
 import time
 from puter import PuterAI, PuterConfig

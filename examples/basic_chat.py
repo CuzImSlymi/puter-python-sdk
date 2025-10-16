@@ -7,6 +7,7 @@ Perfect for getting started with the library.
 """
 
 import os
+
 from puter import PuterAI
 
 

@@ -6,9 +6,10 @@ A basic interactive chatbot with personality and conversation management.
 Perfect for building customer service bots, assistants, or companions.
 """
 
-import os
 import json
+import os
 from datetime import datetime
+
 from puter import PuterAI
 
 

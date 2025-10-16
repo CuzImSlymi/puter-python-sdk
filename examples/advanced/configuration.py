@@ -7,7 +7,8 @@ and advanced settings for production usage.
 """
 
 import os
-from puter import PuterAI, config, PuterConfig
+
+from puter import PuterAI, PuterConfig, config
 
 
 def demonstrate_env_config():
