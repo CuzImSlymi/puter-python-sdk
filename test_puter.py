@@ -1,5 +1,3 @@
-import os
-
 from puter import PuterAI, PuterAPIError, PuterAuthError
 
 

@@ -31,28 +31,23 @@ jobs:
     
     - name: Run performance benchmarks
       run: |
-        python -c "
-import os
-os.makedirs('tests/benchmarks', exist_ok=True)
-        
-# Create basic benchmark test
-with open('tests/benchmarks/test_performance.py', 'w') as f:
-    f.write('''
+        mkdir -p tests/benchmarks
+        cat > tests/benchmarks/test_performance.py << 'EOF'
 import pytest
 import time
 from puter import PuterAI, PuterConfig
 
 class TestPerformance:
     def test_client_initialization_speed(self, benchmark):
-        \"\"\"Test how fast we can initialize a PuterAI client.\"\"\"
+        """Test how fast we can initialize a PuterAI client."""
         def init_client():
-            return PuterAI(username=\"test\", password=\"test\")
+            return PuterAI(username="test", password="test")
         
         result = benchmark(init_client)
         assert result is not None
     
     def test_config_loading_speed(self, benchmark):
-        \"\"\"Test configuration loading performance.\"\"\"
+        """Test configuration loading performance."""
         def load_config():
             from puter.config import PuterConfig
             return PuterConfig()
@@ -61,16 +56,14 @@ class TestPerformance:
         assert result is not None
     
     def test_model_data_loading_speed(self, benchmark):
-        \"\"\"Test model data loading performance.\"\"\"
+        """Test model data loading performance."""
         def load_models():
-            client = PuterAI(username=\"test\", password=\"test\")
+            client = PuterAI(username="test", password="test")
             return client.get_available_models()
         
         result = benchmark(load_models)
         assert len(result) > 0
-            ''')
-        "
-        
+EOF
         pytest tests/benchmarks/ --benchmark-json=benchmark-results-${{ matrix.python-version }}.json
     
     - name: Upload benchmark results
