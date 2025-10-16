@@ -44,7 +44,7 @@ repos:
     rev: 1.7.5
     hooks:
       - id: bandit
-        additional_dependencies: [bandit[toml]]
+        additional_dependencies: ["bandit[toml]"]
         args: [--severity-level=medium]
         exclude: ^tests/
 
