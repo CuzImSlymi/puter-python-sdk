@@ -4,17 +4,14 @@ import asyncio
 import json
 import os
 import time
-from typing import Dict
-from typing import List
-from typing import Optional
+from typing import Dict, List, Optional
 
 import aiohttp
 import requests
 from asyncio_throttle import Throttler
 
 from .config import config
-from .exceptions import PuterAPIError
-from .exceptions import PuterAuthError
+from .exceptions import PuterAPIError, PuterAuthError
 
 
 class PuterAI:
@@ -150,7 +147,8 @@ class PuterAI:
         """Authenticate with Puter.js using the provided username and password.
 
         Raises:
-            PuterAuthError: If username or password are not set, or if login fails.
+            PuterAuthError: If username or password are not set, or if
+                login fails.
 
         Returns:
             bool: True if login is successful, False otherwise.
@@ -183,7 +181,8 @@ class PuterAI:
         """Async version of login method.
 
         Raises:
-            PuterAuthError: If username or password are not set, or if login fails.
+            PuterAuthError: If username or password are not set, or if
+                login fails.
 
         Returns:
             bool: True if login is successful, False otherwise.

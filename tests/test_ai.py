@@ -32,6 +32,7 @@ class TestPuterAIInitialization:
         client = PuterAI(
             username="test", password="test", timeout=60, max_retries=5
         )
+        assert client is not None  # Use the client to avoid unused variable
         from puter.config import config
 
         assert config.timeout == 60
