@@ -7,8 +7,7 @@ and advanced settings for production usage.
 
 import os
 
-from puter import PuterConfig
-from puter import config
+from puter import PuterConfig, config
 
 
 def demonstrate_env_config():
@@ -40,7 +39,8 @@ def demonstrate_env_config():
     print(f"  • Timeout: {new_config.timeout}s")
     print(f"  • Max Retries: {new_config.max_retries}")
     print(
-        f"  • Rate Limit: {new_config.rate_limit_requests}/{new_config.rate_limit_period}s"
+        f"  • Rate Limit: {new_config.rate_limit_requests}/"
+        f"{new_config.rate_limit_period}s"
     )
 
 
@@ -114,9 +114,7 @@ def demonstrate_config_profiles():
             print(f"    {key}: {value}")
 
         # Show how to apply profile
-        print(
-            f"  Usage: PuterAI(username='...', password='...', **{settings})"
-        )
+        print(f"  Usage: PuterAI(username='...', password='...', **{settings})")
 
 
 def demonstrate_monitoring_config():

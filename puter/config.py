@@ -1,8 +1,7 @@
 """Configuration settings for the Puter AI SDK."""
 
 import os
-from typing import Any
-from typing import Dict
+from typing import Any, Dict
 
 
 class PuterConfig:
@@ -12,9 +11,7 @@ class PuterConfig:
         """Initialize configuration with default values."""
         # API Configuration
         self.api_base = os.getenv("PUTER_API_BASE", "https://api.puter.com")
-        self.login_url = os.getenv(
-            "PUTER_LOGIN_URL", "https://puter.com/login"
-        )
+        self.login_url = os.getenv("PUTER_LOGIN_URL", "https://puter.com/login")
 
         # Request Configuration
         self.timeout = int(os.getenv("PUTER_TIMEOUT", "30"))
@@ -23,12 +20,8 @@ class PuterConfig:
         self.backoff_factor = float(os.getenv("PUTER_BACKOFF_FACTOR", "2.0"))
 
         # Rate Limiting
-        self.rate_limit_requests = int(
-            os.getenv("PUTER_RATE_LIMIT_REQUESTS", "10")
-        )
-        self.rate_limit_period = int(
-            os.getenv("PUTER_RATE_LIMIT_PERIOD", "60")
-        )
+        self.rate_limit_requests = int(os.getenv("PUTER_RATE_LIMIT_REQUESTS", "10"))
+        self.rate_limit_period = int(os.getenv("PUTER_RATE_LIMIT_PERIOD", "60"))
 
         # Default Headers
         self.headers = {

@@ -43,9 +43,7 @@ class BlogWriter:
         response = self.client.chat(prompt)
         return response
 
-    def create_outline(
-        self, title, target_audience="general readers", word_count=1000
-    ):
+    def create_outline(self, title, target_audience="general readers", word_count=1000):
         """Create a detailed blog post outline."""
         prompt = """Create a detailed outline for a blog post titled "{title}".
 
@@ -83,7 +81,8 @@ class BlogWriter:
 
     def write_section(self, section_title, context, word_count=300):
         """Write a detailed section of the blog post."""
-        prompt = """Write a detailed section for a blog post with the heading "{section_title}".
+        prompt = """Write a detailed section for a blog post with the heading
+        "{section_title}".
 
         Context: {context}
         Target length: ~{word_count} words
@@ -136,16 +135,14 @@ class BlogWriter:
         response = self.client.chat(prompt)
         return response
 
-    def full_blog_post(
-        self, topic, target_audience="general readers", word_count=1000
-    ):
+    def full_blog_post(self, topic, target_audience="general readers", word_count=1000):
         """Generate a complete blog post."""
         print(f"🚀 Generating blog post about '{topic}'...")
 
         # Step 1: Generate title ideas
         print("📝 Generating title ideas...")
-        title_prompt = """Create 3 SEO-friendly, engaging blog post titles about "{topic}"
-        for {target_audience}. Make them clickable and valuable."""
+        title_prompt = """Create 3 SEO-friendly, engaging blog post titles about
+        "{topic}" for {target_audience}. Make them clickable and valuable."""
 
         titles_response = self.client.chat(title_prompt)
         print(f"Title ideas:\n{titles_response}\n")
@@ -301,9 +298,7 @@ def main():
                     print(f"\n🚀 Creating full blog post about '{topic}'...")
                     print("This may take a few minutes...\n")
 
-                    blog_post = writer.full_blog_post(
-                        topic, audience, word_count
-                    )
+                    blog_post = writer.full_blog_post(topic, audience, word_count)
 
                     print("✅ Blog post completed!")
 

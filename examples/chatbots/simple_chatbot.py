@@ -15,9 +15,7 @@ from puter import PuterAI
 class SimpleChatbot:
     """A simple chatbot with personality and memory."""
 
-    def __init__(
-        self, name="Puter Assistant", personality="helpful and friendly"
-    ):
+    def __init__(self, name="Puter Assistant", personality="helpful and friendly"):
         """Initialize the chatbot with name and personality."""
         self.name = name
         self.personality = personality
@@ -45,7 +43,8 @@ class SimpleChatbot:
         - Provide practical, actionable advice
         - Use a warm, conversational tone
 
-        Keep responses concise but informative. If you don't know something, admit it honestly."""
+        Keep responses concise but informative. If you don't know something,
+        admit it honestly."""
 
         # Send personality setup (this will be remembered in chat history)
         self.client.chat(personality_prompt)
@@ -54,14 +53,10 @@ class SimpleChatbot:
     def chat(self, message):
         """Send a message and get response."""
         if not self.client:
-            raise RuntimeError(
-                "Chatbot not initialized. Call initialize() first."
-            )
+            raise RuntimeError("Chatbot not initialized. Call initialize() first.")
 
         # Add timestamp and user context
-        context_message = (
-            f"[{datetime.now().strftime('%H:%M')}] User: {message}"
-        )
+        context_message = f"[{datetime.now().strftime('%H:%M')}] User: {message}"
 
         # Get AI response
         response = self.client.chat(context_message)
@@ -136,9 +131,7 @@ def main():
         user_name = input("What's your name? ").strip()
         if user_name:
             bot.user_name = user_name
-            greeting = bot.chat(
-                f"Hi! My name is {user_name}. Nice to meet you!"
-            )
+            greeting = bot.chat(f"Hi! My name is {user_name}. Nice to meet you!")
             print(f"\n{bot.name}: {greeting}")
         else:
             greeting = bot.chat(
@@ -161,7 +154,8 @@ def main():
                 if user_input.lower() == "quit":
                     # Farewell message
                     farewell = bot.chat(
-                        "The user is saying goodbye. Please say a nice farewell message."
+                        "The user is saying goodbye. "
+                        "Please say a nice farewell message."
                     )
                     print(f"\n{bot.name}: {farewell}")
                     break
@@ -193,9 +187,7 @@ def main():
                 print(f"\n{bot.name}: {response}")
 
             except KeyboardInterrupt:
-                print(
-                    f"\n\n{bot.name}: Goodbye! It was nice chatting with you! 👋"
-                )
+                print(f"\n\n{bot.name}: Goodbye! It was nice chatting with you! 👋")
                 break
             except Exception as e:
                 print(f"\n❌ Error: {e}")

@@ -3,8 +3,7 @@
 import os
 from unittest.mock import patch
 
-from puter.config import PuterConfig
-from puter.config import config
+from puter.config import PuterConfig, config
 
 
 class TestPuterConfig:

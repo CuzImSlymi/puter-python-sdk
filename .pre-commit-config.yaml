@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: v4.6.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -14,40 +14,32 @@ repos:
       - id: requirements-txt-fixer
 
   - repo: https://github.com/psf/black
-    rev: 25.9.0
+    rev: 24.4.2
     hooks:
       - id: black
         language_version: python3
-        args: [--line-length=79]
 
   - repo: https://github.com/pycqa/isort
-    rev: 7.0.0
+    rev: 5.13.2
     hooks:
       - id: isort
-        args: [--profile=black, --line-length=79]
+        args: [--profile=black]
 
   - repo: https://github.com/pycqa/flake8
-    rev: 7.3.0
+    rev: 7.1.0
     hooks:
       - id: flake8
-        additional_dependencies: [flake8-docstrings, flake8-import-order]
-        args: [--max-line-length=79, --extend-ignore=E203]
+        additional_dependencies: [flake8-docstrings]
+        args:
+          - "--max-line-length=88"
+          - "--extend-ignore=E203,W503"
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.18.2
+    rev: v1.10.0
     hooks:
       - id: mypy
         additional_dependencies: [types-requests]
         args: [--ignore-missing-imports]
-
-  # Temporarily disabled due to pbr dependency issue
-  # - repo: https://github.com/PyCQA/bandit
-  #   rev: 1.7.5
-  #   hooks:
-  #     - id: bandit
-  #       additional_dependencies: ["bandit[toml]"]
-  #       args: [--severity-level=medium]
-  #       exclude: ^tests/
 
   - repo: https://github.com/pycqa/pydocstyle
     rev: 6.3.0
@@ -56,25 +48,7 @@ repos:
         args: [--convention=google]
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.21.0
+    rev: v3.16.0
     hooks:
       - id: pyupgrade
         args: [--py37-plus]
-
-
-  # Temporarily disabled - pytest not found in CI
-  # - repo: local
-  #   hooks:
-  #     - id: pytest-check
-  #       name: pytest-check
-  #       entry: pytest
-  #       language: system
-  #       pass_filenames: false
-  #       always_run: true
-  #       args: [tests/, --tb=short]
-
-  # Temporarily disabled due to pyproject.toml conflict
-  # - repo: https://github.com/Lucas-C/pre-commit-hooks-safety
-  #   rev: v1.3.2
-  #   hooks:
-  #     - id: python-safety-dependencies-check

@@ -2,14 +2,11 @@
 
 import json
 import os
-from unittest.mock import Mock
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import pytest
 
-from puter import PuterAI
-from puter import PuterAPIError
-from puter import PuterAuthError
+from puter import PuterAI, PuterAPIError, PuterAuthError
 
 
 class TestCoverageBoost:
@@ -151,9 +148,7 @@ class TestCoverageBoost:
         client = PuterAI(username="test", password="test")
 
         mock_response = Mock()
-        mock_response.json.side_effect = json.JSONDecodeError(
-            "Invalid JSON", "", 0
-        )
+        mock_response.json.side_effect = json.JSONDecodeError("Invalid JSON", "", 0)
         mock_response.raise_for_status.return_value = None
         mock_post.return_value = mock_response
 

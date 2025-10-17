@@ -1,17 +1,13 @@
 """Test script for Puter Python SDK."""
 
-from puter import PuterAI
-from puter import PuterAPIError
-from puter import PuterAuthError
+from puter import PuterAI, PuterAPIError, PuterAuthError
 
 
 def main():
     """Test the Puter AI SDK interactively."""
     print("\n--- Puter.js AI Python SDK Test Script ---")
     print("This script allows you to interact with Puter.js AI models.")
-    print(
-        "Your credentials are used only for this session and are not stored."
-    )
+    print("Your credentials are used only for this session and are not stored.")
 
     username = input("Enter your Puter.js Username: ")
     password = input("Enter your Puter.js Password: ")
@@ -26,7 +22,8 @@ def main():
             print("Login successful!")
             print(f"Currently using model: {client.current_model}")
             print(
-                "Type 'exit' to quit, '/model <name>' to change model, '/clear' to clear chat history."
+                "Type 'exit' to quit, '/model <name>' to change model, "
+                "'/clear' to clear chat history."
             )
             print("Type '/models' to see available models.")
 
@@ -45,12 +42,15 @@ def main():
                                 f"Model successfully changed to: {client.current_model}"
                             )
                         else:
+                            available_models = ", ".join(client.get_available_models())
                             print(
-                                f"Error: Model '{new_model}' not found. Available models: {', '.join(client.get_available_models())}"
+                                f"Error: Model '{new_model}' not found. "
+                                f"Available models: {available_models}"
                             )
                     else:
                         print(
-                            f"Current model: {client.current_model}. Use '/model <name>' to change."
+                            f"Current model: {client.current_model}. "
+                            f"Use '/model <name>' to change."
                         )
                 elif user_input.lower() == "/clear":
                     client.clear_chat_history()

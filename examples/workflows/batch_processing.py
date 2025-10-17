@@ -10,9 +10,7 @@ import csv
 import json
 import os
 from datetime import datetime
-from typing import Any
-from typing import Dict
-from typing import List
+from typing import Any, Dict, List
 
 from puter import PuterAI
 
@@ -45,9 +43,7 @@ class BatchProcessor:
         )
         self.client.login()
 
-    def process_sentiment_analysis(
-        self, texts: List[str]
-    ) -> List[Dict[str, Any]]:
+    def process_sentiment_analysis(self, texts: List[str]) -> List[Dict[str, Any]]:
         """Analyze sentiment for multiple texts."""
         print(f"🎭 Analyzing sentiment for {len(texts)} texts...")
 
@@ -62,7 +58,8 @@ class BatchProcessor:
 
                 Text: "{text}"
 
-                Format as JSON: {{"sentiment": "", "confidence": 0, "emotions": [], "explanation": ""}}"""
+                Format as JSON: {{"sentiment": "", "confidence": 0,
+                "emotions": [], "explanation": ""}}"""
 
                 response = self.client.chat(prompt)
 
@@ -97,7 +94,8 @@ class BatchProcessor:
 
                 results.append(result)
                 print(
-                    f"  ✅ {i}/{len(texts)} - {result_data.get('sentiment', 'unknown').upper()}"
+                    f"  ✅ {i}/{len(texts)} - "
+                    f"{result_data.get('sentiment', 'unknown').upper()}"
                 )
 
             except Exception as e:
@@ -143,7 +141,8 @@ class BatchProcessor:
 
                 results.append(result)
                 print(
-                    f"  ✅ {i}/{len(texts)} - {len(text.split())} → {len(response.strip().split())} words"
+                    f"  ✅ {i}/{len(texts)} - {len(text.split())} → "
+                    f"{len(response.strip().split())} words"
                 )
 
             except Exception as e:
@@ -213,7 +212,8 @@ class BatchProcessor:
             try:
                 if task_type == "sentiment":
                     prompt = """Analyze sentiment: "{text}"
-                    Return JSON: {{"sentiment": "positive/negative/neutral", "score": 0.0}}"""
+                    Return JSON: {{"sentiment": "positive/negative/neutral",
+                    "score": 0.0}}"""
                 elif task_type == "summary":
                     prompt = """Summarize in 50 words: "{text}"""
                 else:
@@ -250,13 +250,12 @@ class BatchProcessor:
         self.processed_count += len(results)
 
         print(
-            f"✅ Completed: {len(successful_results)} successful, {len(error_results)} errors"
+            f"✅ Completed: {len(successful_results)} successful, "
+            f"{len(error_results)} errors"
         )
         return successful_results
 
-    def save_results(
-        self, results: List[Dict[str, Any]], filename=None, format="json"
-    ):
+    def save_results(self, results: List[Dict[str, Any]], filename=None, format="json"):
         """Save processing results to file."""
         if not filename:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -337,7 +336,8 @@ def main():
 
             if choice == "1":
                 print(
-                    f"\n📊 Processing {len(sample_texts)} texts for sentiment analysis..."
+                    f"\n📊 Processing {len(sample_texts)} texts for "
+                    f"sentiment analysis..."
                 )
                 results = processor.process_sentiment_analysis(sample_texts)
 
@@ -346,14 +346,10 @@ def main():
                     print(f"\n💾 Results saved to {filename}")
 
                     stats = processor.get_stats()
-                    print(
-                        f"📈 Stats: {stats['success_rate']:.1f}% success rate"
-                    )
+                    print(f"📈 Stats: {stats['success_rate']:.1f}% success rate")
 
             elif choice == "2":
-                print(
-                    f"\n📝 Processing {len(sample_texts)} texts for summarization..."
-                )
+                print(f"\n📝 Processing {len(sample_texts)} texts for summarization...")
                 results = processor.process_text_summarization(
                     sample_texts, max_length=30
                 )
@@ -364,12 +360,9 @@ def main():
 
             elif choice == "3":
                 language = (
-                    input("Target language (default: Spanish): ").strip()
-                    or "Spanish"
+                    input("Target language (default: Spanish): ").strip() or "Spanish"
                 )
-                print(
-                    f"\n🌍 Translating {len(sample_texts)} texts to {language}..."
-                )
+                print(f"\n🌍 Translating {len(sample_texts)} texts to {language}...")
                 results = processor.process_translation(sample_texts, language)
 
                 if results:
@@ -379,9 +372,7 @@ def main():
             elif choice == "4":
                 print("\n🚀 Async processing demo...")
                 results = asyncio.run(
-                    processor.async_batch_process(
-                        sample_texts[:4], "sentiment"
-                    )
+                    processor.async_batch_process(sample_texts[:4], "sentiment")
                 )
 
                 if results:
@@ -394,19 +385,13 @@ def main():
                     with open(filename, encoding="utf-8") as f:
                         if filename.endswith(".csv"):
                             reader = csv.reader(f)
-                            texts = [
-                                row[0] for row in reader if row
-                            ]  # First column
+                            texts = [row[0] for row in reader if row]  # First column
                         else:
-                            texts = [
-                                line.strip() for line in f if line.strip()
-                            ]
+                            texts = [line.strip() for line in f if line.strip()]
 
                     print(f"📁 Loaded {len(texts)} texts from {filename}")
                     task = (
-                        input("Task (sentiment/summary/translation): ")
-                        .strip()
-                        .lower()
+                        input("Task (sentiment/summary/translation): ").strip().lower()
                     )
 
                     if task == "sentiment":

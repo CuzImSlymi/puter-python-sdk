@@ -19,9 +19,7 @@ def main():
     password = os.getenv("PUTER_PASSWORD", "your_password_here")
 
     if username == "your_username_here":
-        print(
-            "⚠️  Please set PUTER_USERNAME and PUTER_PASSWORD environment variables"
-        )
+        print("⚠️  Please set PUTER_USERNAME and PUTER_PASSWORD environment variables")
         return
 
     try:
@@ -45,9 +43,7 @@ def main():
         ]
 
         # Filter to only models that are actually available
-        available_test_models = [
-            model for model in test_models if model in all_models
-        ]
+        available_test_models = [model for model in test_models if model in all_models]
 
         if not available_test_models:
             # Fallback to first few available models
@@ -64,7 +60,8 @@ def main():
         ]
 
         print(
-            f"\n💬 Testing {len(test_prompts)} prompts across {len(available_test_models)} models..."
+            f"\n💬 Testing {len(test_prompts)} prompts across "
+            f"{len(available_test_models)} models..."
         )
         print("=" * 70)
 
@@ -88,9 +85,7 @@ def main():
 
                     # Display response (truncated for readability)
                     display_response = (
-                        response[:150] + "..."
-                        if len(response) > 150
-                        else response
+                        response[:150] + "..." if len(response) > 150 else response
                     )
                     print(f"🤖 {model}:")
                     print(f"   {display_response}")
@@ -125,9 +120,7 @@ def main():
 
                     # Mini chat session
                     while True:
-                        user_input = input(
-                            f"\n[{selected_model}] You: "
-                        ).strip()
+                        user_input = input(f"\n[{selected_model}] You: ").strip()
 
                         if user_input.lower() in ["back", "switch"]:
                             break

@@ -96,7 +96,10 @@ def update_changelog(version):
 
     # Find the first unreleased section or add new entry
     date_str = datetime.now().strftime("%Y-%m-%d")
-    new_section = f"## [{version}] - {date_str}\n\n### Added\n- \n\n### Changed\n- \n\n### Fixed\n- \n\n"
+    new_section = (
+        f"## [{version}] - {date_str}\n\n### Added\n- \n\n"
+        f"### Changed\n- \n\n### Fixed\n- \n\n"
+    )
 
     # Insert after the first header
     lines = content.split("\n")
@@ -133,7 +136,7 @@ def check_git_status():
 
 
 def run_tests():
-    """Run the test suite."""
+    """Execute the test suite."""
     print("Running tests...")
     try:
         run_command("python -m pytest tests/ -v", capture_output=False)
@@ -192,12 +195,10 @@ def push_changes(version):
 
 
 def main():
-    """Main release function."""
+    """Execute the main release function."""
     parser = argparse.ArgumentParser(description="Release automation script")
     parser.add_argument("version", help="New version number (e.g., 1.0.0)")
-    parser.add_argument(
-        "--skip-tests", action="store_true", help="Skip running tests"
-    )
+    parser.add_argument("--skip-tests", action="store_true", help="Skip running tests")
     parser.add_argument(
         "--skip-build", action="store_true", help="Skip building package"
     )
@@ -249,12 +250,11 @@ def main():
             push_changes(args.version)
             print(f"🎉 Release {args.version} completed!")
             print(
-                "The GitHub Actions workflow will handle PyPI publishing and GitHub release creation."
+                "The GitHub Actions workflow will handle PyPI publishing "
+                "and GitHub release creation."
             )
         else:
-            print(
-                "Changes committed and tagged locally. Push manually when ready."
-            )
+            print("Changes committed and tagged locally. Push manually when ready.")
 
     print("Release process completed!")
 
