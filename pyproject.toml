@@ -47,6 +47,7 @@ dev = [
     "black",
     "flake8",
     "mypy",
+    "types-requests>=2.31.0",
 ]
 
 [tool.setuptools]
