@@ -40,7 +40,8 @@ def demonstrate_env_config():
     print(f"  • Timeout: {new_config.timeout}s")
     print(f"  • Max Retries: {new_config.max_retries}")
     print(
-        f"  • Rate Limit: {new_config.rate_limit_requests}/{new_config.rate_limit_period}s"
+        f"  • Rate Limit: {new_config.rate_limit_requests}/"
+        f"{new_config.rate_limit_period}s"
     )
 
 

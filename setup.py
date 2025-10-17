@@ -49,7 +49,9 @@ setup(
     project_urls={
         "Bug Reports": "https://github.com/CuzImSlymi/puter-python-sdk/issues",
         "Source": "https://github.com/CuzImSlymi/puter-python-sdk",
-        "Documentation": "https://github.com/CuzImSlymi/puter-python-sdk#readme",
+        "Documentation": (
+            "https://github.com/CuzImSlymi/puter-python-sdk#readme"
+        ),
     },
     classifiers=[
         "Development Status :: 4 - Beta",

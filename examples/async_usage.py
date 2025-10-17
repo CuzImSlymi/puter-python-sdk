@@ -22,7 +22,8 @@ async def async_chat_example():
 
     if username == "your_username_here":
         print(
-            "⚠️  Please set PUTER_USERNAME and PUTER_PASSWORD environment variables"
+            "⚠️  Please set PUTER_USERNAME and PUTER_PASSWORD environment "
+            "variables"
         )
         return
 
@@ -62,7 +63,8 @@ async def async_chat_example():
         end_time = time.time()
 
         print(
-            f"\n⚡ Completed {len(prompts)} chats in {end_time - start_time:.2f} seconds"
+            f"\n⚡ Completed {len(prompts)} chats in "
+            f"{end_time - start_time:.2f} seconds"
         )
 
         for i, (prompt, response) in enumerate(zip(prompts, responses), 1):

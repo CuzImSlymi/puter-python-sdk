@@ -68,7 +68,8 @@ class BatchProcessor:
 
                 # Try to extract JSON from response
                 try:
-                    # Simple JSON extraction (in production, use more robust parsing)
+                    # Simple JSON extraction (in production, use more robust
+                    # parsing)
                     json_start = response.find("{")
                     json_end = response.rfind("}") + 1
                     if json_start != -1 and json_end > json_start:
