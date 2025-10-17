@@ -1,6 +1,8 @@
 """Test script for Puter Python SDK."""
 
-from puter import PuterAI, PuterAPIError, PuterAuthError
+from puter import PuterAI
+from puter import PuterAPIError
+from puter import PuterAuthError
 
 
 def main():

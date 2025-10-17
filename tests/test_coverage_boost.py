@@ -2,11 +2,14 @@
 
 import json
 import os
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
+from unittest.mock import patch
 
 import pytest
 
-from puter import PuterAI, PuterAPIError, PuterAuthError
+from puter import PuterAI
+from puter import PuterAPIError
+from puter import PuterAuthError
 
 
 class TestCoverageBoost:

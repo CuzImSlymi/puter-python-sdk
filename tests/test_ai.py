@@ -1,10 +1,14 @@
 """Tests for the PuterAI class."""
 
-from unittest.mock import AsyncMock, Mock, patch
+from unittest.mock import AsyncMock
+from unittest.mock import Mock
+from unittest.mock import patch
 
 import pytest
 
-from puter import PuterAI, PuterAPIError, PuterAuthError
+from puter import PuterAI
+from puter import PuterAPIError
+from puter import PuterAuthError
 
 
 class TestPuterAIInitialization:

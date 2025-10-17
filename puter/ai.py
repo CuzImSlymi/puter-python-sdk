@@ -4,14 +4,17 @@ import asyncio
 import json
 import os
 import time
-from typing import Dict, List, Optional
+from typing import Dict
+from typing import List
+from typing import Optional
 
 import aiohttp
 import requests
 from asyncio_throttle import Throttler
 
 from .config import config
-from .exceptions import PuterAPIError, PuterAuthError
+from .exceptions import PuterAPIError
+from .exceptions import PuterAuthError
 
 
 class PuterAI:
@@ -250,7 +253,8 @@ class PuterAI:
 
         Args:
             prompt (str): The user's message.
-            model (Optional[str]): The model to use for this specific chat. Defaults to current_model.
+            model (Optional[str]): The model to use for this specific chat.
+                Defaults to current_model.
 
         Raises:
             PuterAPIError: If the API call fails.
@@ -333,7 +337,7 @@ class PuterAI:
                     if isinstance(result, str):
                         return result
 
-                    # Case 4: result.choices[0].message.content (OpenAI-style format)
+                    # Case 4: result.choices[0].message.content (OpenAI-style)
                     if isinstance(result, dict) and "choices" in result:
                         choices = result["choices"]
                         if isinstance(choices, list) and len(choices) > 0:
@@ -390,7 +394,8 @@ class PuterAI:
                         else str(response_data)
                     ),
                 }
-                return f"No content in AI response. Debug: {json.dumps(debug_info, indent=2)}"
+                debug_str = json.dumps(debug_info, indent=2)
+                return f"No content in AI response. Debug: {debug_str}"
         except Exception as e:
             raise PuterAPIError(f"AI chat error: {e}")
 
@@ -403,7 +408,8 @@ class PuterAI:
 
         Args:
             prompt (str): The user's message.
-            model (Optional[str]): The model to use for this specific chat. Defaults to current_model.
+            model (Optional[str]): The model to use for this specific chat.
+                Defaults to current_model.
 
         Raises:
             PuterAPIError: If the API call fails.
@@ -533,7 +539,8 @@ class PuterAI:
                         else str(response_data)
                     ),
                 }
-                return f"No content in AI response. Debug: {json.dumps(debug_info, indent=2)}"
+                debug_str = json.dumps(debug_info, indent=2)
+                return f"No content in AI response. Debug: {debug_str}"
         except Exception as e:
             raise PuterAPIError(f"Async AI chat error: {e}")
 
@@ -559,6 +566,7 @@ class PuterAI:
         """Retrieve a list of all available AI model names.
 
         Returns:
-            List[str]: A list of strings, where each string is an available model name.
+            List[str]: A list of strings, where each string is an available
+                model name.
         """
         return list(self.available_models.keys())

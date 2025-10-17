@@ -1,7 +1,8 @@
 """Configuration settings for the Puter AI SDK."""
 
 import os
-from typing import Any, Dict
+from typing import Any
+from typing import Dict
 
 
 class PuterConfig:

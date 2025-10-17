@@ -2,7 +2,9 @@
 
 import pytest
 
-from puter.exceptions import PuterAPIError, PuterAuthError, PuterError
+from puter.exceptions import PuterAPIError
+from puter.exceptions import PuterAuthError
+from puter.exceptions import PuterError
 
 
 class TestPuterExceptions:

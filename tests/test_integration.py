@@ -4,7 +4,8 @@ import os
 
 import pytest
 
-from puter import PuterAI, PuterAuthError
+from puter import PuterAI
+from puter import PuterAuthError
 
 
 @pytest.mark.integration
@@ -200,6 +201,7 @@ class TestPuterAIStressTests:
         for _ in range(100):
             client = PuterAI(username="test", password="test")
             models = client.get_available_models()
+            assert len(models) > 0  # Use models to avoid unused variable
             client.clear_chat_history()
             del client
 
