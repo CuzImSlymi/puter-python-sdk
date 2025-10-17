@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """Basic Chat Example - Puter Python SDK.
 
-This example demonstrates the simplest way to chat with AI models using the
-Puter SDK.
+This example demonstrates the simplest way to chat with AI models using the Puter SDK.
 Perfect for getting started with the library.
 """
 

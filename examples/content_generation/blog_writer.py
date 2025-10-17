@@ -186,8 +186,7 @@ class BlogWriter:
             section_content = self.write_section(
                 section_topic,
                 f"This is part of a blog post about {topic} for {target_audience}",
-                word_count //
-                len(section_topics),
+                word_count // len(section_topics),
             )
             sections.append(f"## {section_topic}\n\n{section_content}")
 
