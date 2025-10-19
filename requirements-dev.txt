@@ -13,7 +13,6 @@ black>=23.0.0
 
 # Build and Release
 build>=0.10.0
-docstring-coverage>=2.3.0
 flake8>=6.0.0
 flake8-docstrings>=1.7.0
 interrogate>=1.5.0
