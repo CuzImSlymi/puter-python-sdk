@@ -127,18 +127,21 @@ async def main():
 asyncio.run(main())
 ```
 
-#### `chat(prompt: str, model: Optional[str] = None) -> str`
+#### `chat(prompt: Optional[str] = None, model: Optional[str] = None, *, images: Optional[Sequence] = None, content_parts: Optional[Sequence[dict]] = None) -> str`
 
-Send a chat message to the AI model and get response.
+Send a chat or multimodal message to the AI model and get a response.
 
 **Parameters:**
-- `prompt` (str): The user's message
+- `prompt` (str, optional): The user's message. May be omitted when using `images` or `content_parts`
 - `model` (str, optional): Model to use for this chat. Defaults to `current_model`
+- `images` (sequence, optional): Image inputs to attach. Each item may be a file path, `bytes`, a file-like object, an HTTP(S)/data URL, a tuple of `(data, mime_type)`, or a pre-built payload dictionary (`{"type": "image_url", ...}`)
+- `content_parts` (sequence of dict, optional): Fully custom content payload overriding both `prompt` and `images`
 
 **Returns:**
 - `str`: The AI's response
 
 **Raises:**
+- `ValueError`: If no content is provided or an image input is invalid
 - `PuterAPIError`: If the API call fails
 - `PuterAuthError`: If not authenticated
 
@@ -154,20 +157,39 @@ print(response)
 # Chat with specific model
 response = client.chat("Explain quantum computing", model="gpt-4")
 print(response)
+
+# Vision chat with a local image
+response = client.chat(
+    "List every ingredient you see in this dish",
+    images=["/tmp/dinner.jpg"],
+)
+print(response)
+
+# Custom multimodal payload (content_parts overrides prompt/images)
+response = client.chat(
+    content_parts=[
+        {"type": "text", "text": "Transcribe this audio clip."},
+        {"type": "input_audio", "audio": {"id": "file_audio_123"}},
+    ],
+)
+print(response)
 ```
 
-#### `async_chat(prompt: str, model: Optional[str] = None) -> str`
+#### `async_chat(prompt: Optional[str] = None, model: Optional[str] = None, *, images: Optional[Sequence] = None, content_parts: Optional[Sequence[dict]] = None) -> str`
 
-Async version of chat method.
+Async version of the chat method with multimodal support.
 
 **Parameters:**
-- `prompt` (str): The user's message
-- `model` (str, optional): Model to use for this chat
+- `prompt` (str, optional): The user's message. May be omitted when using `images` or `content_parts`
+- `model` (str, optional): The model to use for this chat
+- `images` (sequence, optional): Image inputs handled the same way as in `chat`
+- `content_parts` (sequence of dict, optional): Fully custom content payload overriding `prompt` and `images`
 
 **Returns:**
 - `str`: The AI's response
 
 **Raises:**
+- `ValueError`: If no content is provided or an image input is invalid
 - `PuterAPIError`: If the API call fails
 - `PuterAuthError`: If not authenticated
 
@@ -183,11 +205,21 @@ async def main():
     response = await client.async_chat("What is AI?")
     print(response)
 
-    # Multiple concurrent chats
+    # Async vision request
+    response = await client.async_chat(
+        "What is in this bowl?",
+        images=["https://example.com/food.jpg"],
+    )
+    print(response)
+
+    # Multiple concurrent multimodal chats
     tasks = [
-        client.async_chat("What is Python?"),
-        client.async_chat("What is JavaScript?"),
-        client.async_chat("What is machine learning?")
+        client.async_chat("Summarize", images=["/tmp/report.png"]),
+        client.async_chat(content_parts=[
+            {"type": "text", "text": "Count the objects"},
+            {"type": "image_url", "image_url": {"url": "data:image/png;base64,..."}},
+        ]),
+        client.async_chat("What is machine learning?"),
     ]
     responses = await asyncio.gather(*tasks)
     for response in responses:
@@ -268,7 +300,7 @@ client = PuterAI()
 print(client.current_model)  # "claude-opus-4" (default)
 ```
 
-#### `chat_history: List[Dict[str, str]]`
+#### `chat_history: List[Dict[str, Any]]`
 
 The conversation history as a list of message dictionaries.
 

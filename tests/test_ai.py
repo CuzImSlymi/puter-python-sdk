@@ -161,6 +161,71 @@ class TestPuterAIChat:
         with pytest.raises(PuterAPIError):
             authenticated_client.chat("Hello!")
 
+    def test_chat_with_image_path(
+        self,
+        authenticated_client,
+        mock_requests,
+        sample_chat_response,
+        tmp_path,
+    ):
+        """Ensure images are attached as data URLs when using file paths."""
+
+        image_bytes = b"\x89PNG\r\n\x1a\nmockdata"
+        image_path = tmp_path / "sample.png"
+        image_path.write_bytes(image_bytes)
+
+        mock_response = Mock()
+        mock_response.json.return_value = sample_chat_response
+        mock_response.raise_for_status.return_value = None
+        mock_requests.post.return_value = mock_response
+
+        response = authenticated_client.chat(
+            "Describe this image",
+            images=[image_path],
+        )
+
+        assert response == "Hello! I'm an AI assistant. How can I help you today?"
+
+        # The last call corresponds to the chat request (first call is login)
+        payload = mock_requests.post.call_args_list[-1][1]["json"]
+        message = payload["args"]["messages"][-1]
+        content = message["content"]
+
+        assert isinstance(content, list)
+        assert content[0]["type"] == "text"
+        assert content[0]["text"] == "Describe this image"
+        assert content[1]["type"] == "image_url"
+        assert content[1]["image_url"]["url"].startswith("data:image/png;base64,")
+
+    def test_chat_with_custom_content_parts(
+        self,
+        authenticated_client,
+        mock_requests,
+        sample_chat_response,
+    ):
+        """Allow passing fully custom content structures."""
+
+        mock_response = Mock()
+        mock_response.json.return_value = sample_chat_response
+        mock_response.raise_for_status.return_value = None
+        mock_requests.post.return_value = mock_response
+
+        custom_content = [
+            {"type": "text", "text": "Look at this"},
+            {"type": "input_audio", "audio": {"id": "file_audio"}},
+        ]
+
+        response = authenticated_client.chat(
+            model="gpt-4o",
+            content_parts=custom_content,
+        )
+
+        assert response == "Hello! I'm an AI assistant. How can I help you today?"
+
+        payload = mock_requests.post.call_args_list[-1][1]["json"]
+        message = payload["args"]["messages"][-1]
+        assert message["content"] == custom_content
+
     @pytest.mark.skip(reason="Async test mocking issues - needs fix")
     @pytest.mark.asyncio
     async def test_async_chat_success(self, authenticated_client, sample_chat_response):

@@ -1,10 +1,15 @@
 """Puter AI client module for interacting with Puter.js AI models."""
 
 import asyncio
+import base64
+import copy
 import json
+import mimetypes
 import os
 import time
-from typing import Dict, List, Optional
+from pathlib import Path
+from typing import Any, Dict, IO, List, Optional, Sequence, Tuple, Union
+from urllib.parse import urlparse
 
 import aiohttp
 import requests
@@ -12,6 +17,16 @@ from asyncio_throttle import Throttler
 
 from .config import config
 from .exceptions import PuterAPIError, PuterAuthError
+
+
+ImageInputType = Union[
+    str,
+    os.PathLike,
+    bytes,
+    IO[bytes],
+    Dict[str, Any],
+    Tuple[Union[str, os.PathLike, bytes, IO[bytes]], Optional[str]],
+]
 
 
 class PuterAI:
@@ -41,7 +56,7 @@ class PuterAI:
         self._token = token
         self._username = username
         self._password = password
-        self.chat_history: List[Dict[str, str]] = []
+        self.chat_history: List[Dict[str, Any]] = []
         self.current_model = "claude-opus-4"  # default model
 
         # Apply configuration overrides
@@ -233,17 +248,161 @@ class PuterAI:
         """
         return self.available_models.get(model_name, "openai-completion")
 
-    def chat(self, prompt: str, model: Optional[str] = None) -> str:
+    def _prepare_image_content(
+        self,
+        image: ImageInputType,
+        *,
+        default_mime: str = "image/png",
+    ) -> Dict[str, Any]:
+        """Convert various image inputs into the API-compatible payload."""
+
+        source = image
+        explicit_mime: Optional[str] = None
+
+        if isinstance(image, tuple):
+            if len(image) != 2:
+                raise ValueError(
+                    "Tuple image inputs must be (image_data, mime_type)."
+                )
+            source, explicit_mime = image
+
+        if isinstance(source, dict):
+            return copy.deepcopy(source)
+
+        if isinstance(source, (str, os.PathLike)):
+            path_str = str(source)
+            if path_str.startswith("data:"):
+                return {
+                    "type": "image_url",
+                    "image_url": {"url": path_str},
+                }
+
+            parsed = urlparse(path_str)
+            if parsed.scheme in {"http", "https"}:
+                return {
+                    "type": "image_url",
+                    "image_url": {"url": path_str},
+                }
+
+            file_path = Path(path_str)
+            if not file_path.exists():
+                raise ValueError(f"Image file not found: {path_str}")
+            data = file_path.read_bytes()
+            mime_type = (
+                explicit_mime
+                or mimetypes.guess_type(path_str)[0]
+                or default_mime
+            )
+        elif isinstance(source, bytes):
+            data = source
+            mime_type = explicit_mime or default_mime
+        elif hasattr(source, "read"):
+            raw = source.read()
+            if isinstance(raw, str):
+                data = raw.encode("utf-8")
+            else:
+                data = raw
+            mime_type = (
+                explicit_mime
+                or getattr(source, "mimetype", None)
+                or default_mime
+            )
+        else:
+            raise ValueError(
+                "Unsupported image input type. Provide a path, bytes, file-like "
+                "object, data URL, HTTP(S) URL, or a pre-built image payload."
+            )
+
+        if data is None:
+            raise ValueError("Image data could not be read.")
+
+        if not isinstance(data, (bytes, bytearray)):
+            raise ValueError("Image data must be bytes-like.")
+
+        encoded = base64.b64encode(bytes(data)).decode("utf-8")
+        mime = mime_type or default_mime
+
+        return {
+            "type": "image_url",
+            "image_url": {
+                "url": f"data:{mime};base64,{encoded}",
+            },
+        }
+
+    def _build_user_content(
+        self,
+        prompt: Optional[str],
+        images: Optional[Sequence[ImageInputType]],
+        content_parts: Optional[Sequence[Dict[str, Any]]],
+    ) -> Union[str, List[Dict[str, Any]]]:
+        """Construct the content payload for a user message."""
+
+        if content_parts is not None:
+            if not content_parts:
+                raise ValueError("content_parts cannot be empty.")
+            return [copy.deepcopy(part) for part in content_parts]
+
+        parts: List[Dict[str, Any]] = []
+        text = "" if prompt is None else str(prompt)
+
+        if text:
+            parts.append({"type": "text", "text": text})
+
+        if images:
+            for image in images:
+                parts.append(self._prepare_image_content(image))
+
+        if not parts:
+            raise ValueError(
+                "Provide at least a prompt, content_parts, or images when "
+                "sending a message."
+            )
+
+        if len(parts) == 1 and parts[0].get("type") == "text":
+            return parts[0]["text"]
+
+        return parts
+
+    def _build_user_message(
+        self,
+        prompt: Optional[str],
+        images: Optional[Sequence[ImageInputType]],
+        content_parts: Optional[Sequence[Dict[str, Any]]],
+    ) -> Dict[str, Any]:
+        """Create the user message dictionary for the API payload."""
+
+        content = self._build_user_content(prompt, images, content_parts)
+        return {"role": "user", "content": content}
+
+    def chat(
+        self,
+        prompt: Optional[str] = None,
+        model: Optional[str] = None,
+        *,
+        images: Optional[Sequence[ImageInputType]] = None,
+        content_parts: Optional[Sequence[Dict[str, Any]]] = None,
+    ) -> str:
         """Send a chat message to the AI model and return its response.
 
         The conversation history is automatically managed.
 
         Args:
-            prompt (str): The user's message.
+            prompt (Optional[str]): The user's message. May be omitted when
+                using ``content_parts`` or ``images``.
             model (Optional[str]): The model to use for this specific chat.
                 Defaults to current_model.
+            images (Optional[Sequence[ImageInputType]]): Optional collection of
+                images to send with the message. Items can be file paths,
+                bytes, file-like objects, HTTP(S)/data URLs, tuples of
+                (data, mime_type), or pre-built image payload dictionaries.
+            content_parts (Optional[Sequence[Dict[str, Any]]]): Provide the
+                exact message content structure when you need fine-grained
+                control (e.g., custom multimodal payloads). When supplied,
+                ``prompt`` and ``images`` are ignored.
 
         Raises:
+            ValueError: If no prompt/content/images are supplied or an image
+                input is invalid.
             PuterAPIError: If the API call fails.
 
         Returns:
@@ -252,7 +411,8 @@ class PuterAI:
         if model is None:
             model = self.current_model
 
-        messages = self.chat_history + [{"role": "user", "content": prompt}]
+        user_message = self._build_user_message(prompt, images, content_parts)
+        messages = [*self.chat_history, user_message]
         driver = self._get_driver_for_model(model)
 
         args = {
@@ -353,7 +513,7 @@ class PuterAI:
             content = extract_content(response_data)
 
             if content and content.strip():
-                self.chat_history.append({"role": "user", "content": prompt})
+                self.chat_history.append(copy.deepcopy(user_message))
                 self.chat_history.append({"role": "assistant", "content": content})
                 return content
             else:
@@ -378,17 +538,31 @@ class PuterAI:
         except Exception as e:
             raise PuterAPIError(f"AI chat error: {e}")
 
-    async def async_chat(self, prompt: str, model: Optional[str] = None) -> str:
+    async def async_chat(
+        self,
+        prompt: Optional[str] = None,
+        model: Optional[str] = None,
+        *,
+        images: Optional[Sequence[ImageInputType]] = None,
+        content_parts: Optional[Sequence[Dict[str, Any]]] = None,
+    ) -> str:
         """Send a chat message to the AI model and return its response (async).
 
         The conversation history is automatically managed.
 
         Args:
-            prompt (str): The user's message.
+            prompt (Optional[str]): The user's message. May be omitted when
+                using ``content_parts`` or ``images``.
             model (Optional[str]): The model to use for this specific chat.
                 Defaults to current_model.
+            images (Optional[Sequence[ImageInputType]]): Optional collection of
+                images to send with the message (see ``chat`` for details).
+            content_parts (Optional[Sequence[Dict[str, Any]]]): Custom content
+                payload overriding ``prompt`` and ``images`` when provided.
 
         Raises:
+            ValueError: If no prompt/content/images are supplied or an image
+                input is invalid.
             PuterAPIError: If the API call fails.
 
         Returns:
@@ -397,7 +571,8 @@ class PuterAI:
         if model is None:
             model = self.current_model
 
-        messages = self.chat_history + [{"role": "user", "content": prompt}]
+        user_message = self._build_user_message(prompt, images, content_parts)
+        messages = [*self.chat_history, user_message]
         driver = self._get_driver_for_model(model)
 
         args = {
@@ -492,7 +667,7 @@ class PuterAI:
             content = extract_content(response_data)
 
             if content and content.strip():
-                self.chat_history.append({"role": "user", "content": prompt})
+                self.chat_history.append(copy.deepcopy(user_message))
                 self.chat_history.append({"role": "assistant", "content": content})
                 return content
             else:

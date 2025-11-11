@@ -122,6 +122,34 @@ except Exception as e:
     print(f"An Unexpected Error Occurred: {e}")
 ```
 
+### Vision & Multimodal Chat
+
+Attach local files, remote URLs, or provide fully custom content payloads for
+vision-capable models such as GPT-4o, Claude Sonnet, or Pixtral.
+
+```python
+from puter import PuterAI
+
+puter_ai = PuterAI(username=USERNAME, password=PASSWORD)
+puter_ai.login()
+
+# Send a photo from disk – the SDK automatically converts it to a data URL
+vision_reply = puter_ai.chat(
+    "List the ingredients you can see in this dish",
+    images=["/path/to/dinner.jpg"],
+)
+print(f"Vision model reply: {vision_reply}")
+
+# Or pass a fully custom multimodal payload
+custom_reply = puter_ai.chat(
+    content_parts=[
+        {"type": "text", "text": "Describe the following audio clip"},
+        {"type": "input_audio", "audio": {"id": "file_audio_123"}},
+    ]
+)
+print(f"Custom payload reply: {custom_reply}")
+```
+
 ### Managing AI Models
 
 Explore and switch between different AI models offered by Puter.js.

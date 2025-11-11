@@ -125,6 +125,7 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "slow: mark test as slow running")
     config.addinivalue_line("markers", "auth: mark test as requiring authentication")
     config.addinivalue_line("markers", "network: mark test as requiring network access")
+    config.addinivalue_line("markers", "asyncio: mark test as requiring asyncio event loop")
 
 
 # Environment-based test skipping
