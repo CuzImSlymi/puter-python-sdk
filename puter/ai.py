@@ -254,46 +254,62 @@ class PuterAI:
         default_mime: str = "image/png",
     ) -> Dict[str, Any]:
         """Convert various image inputs into the API-compatible payload."""
-        source = image
-        explicit_mime: Optional[str] = None
-
-        if isinstance(image, tuple):
-            if len(image) != 2:
-                raise ValueError("Tuple image inputs must be (image_data, mime_type).")
-            source, explicit_mime = image
+        source, explicit_mime = self._extract_image_source(image)
 
         if isinstance(source, dict):
             return copy.deepcopy(source)
 
         if isinstance(source, (str, os.PathLike)):
-            path_str = str(source)
-            if path_str.startswith("data:"):
-                return {
-                    "type": "image_url",
-                    "image_url": {"url": path_str},
-                }
+            return self._handle_path_like_image(source, explicit_mime, default_mime)
 
-            parsed = urlparse(path_str)
-            if parsed.scheme in {"http", "https"}:
-                return {
-                    "type": "image_url",
-                    "image_url": {"url": path_str},
-                }
+        data, mime_type = self._extract_image_data(source, explicit_mime, default_mime)
+        return self._create_base64_image_url(data, mime_type, default_mime)
 
-            file_path = Path(path_str)
-            if not file_path.exists():
-                raise ValueError(f"Image file not found: {path_str}")
-            data = file_path.read_bytes()
-            mime_type = (
-                explicit_mime or mimetypes.guess_type(path_str)[0] or default_mime
-            )
-        elif isinstance(source, bytes):
-            data = source
-            mime_type = explicit_mime or default_mime
-        elif hasattr(source, "read") and not isinstance(
+    def _extract_image_source(self, image: ImageInputType) -> tuple:
+        """Extract source and explicit mime type from image input."""
+        if isinstance(image, tuple):
+            if len(image) != 2:
+                raise ValueError("Tuple image inputs must be (image_data, mime_type).")
+            return image
+        return image, None
+
+    def _handle_path_like_image(
+        self, source, explicit_mime: Optional[str], default_mime: str
+    ) -> Dict[str, Any]:
+        """Handle path-like image inputs (strings and PathLike objects)."""
+        path_str = str(source)
+
+        if path_str.startswith("data:"):
+            return {"type": "image_url", "image_url": {"url": path_str}}
+
+        parsed = urlparse(path_str)
+        if parsed.scheme in {"http", "https"}:
+            return {"type": "image_url", "image_url": {"url": path_str}}
+
+        return self._handle_file_path(path_str, explicit_mime, default_mime)
+
+    def _handle_file_path(
+        self, path_str: str, explicit_mime: Optional[str], default_mime: str
+    ) -> Dict[str, Any]:
+        """Handle local file path images."""
+        file_path = Path(path_str)
+        if not file_path.exists():
+            raise ValueError(f"Image file not found: {path_str}")
+
+        data = file_path.read_bytes()
+        mime_type = explicit_mime or mimetypes.guess_type(path_str)[0] or default_mime
+        return self._create_base64_image_url(data, mime_type, default_mime)
+
+    def _extract_image_data(
+        self, source, explicit_mime: Optional[str], default_mime: str
+    ) -> tuple:
+        """Extract image data and mime type from various source types."""
+        if isinstance(source, bytes):
+            return source, explicit_mime or default_mime
+
+        if hasattr(source, "read") and not isinstance(
             source, (str, bytes, os.PathLike, tuple)
         ):
-            # Type narrowing: source is IO[bytes] at this point
             file_obj = source  # type: IO[bytes]
             raw = file_obj.read()
             if isinstance(raw, str):
@@ -303,12 +319,17 @@ class PuterAI:
             mime_type = (
                 explicit_mime or getattr(source, "mimetype", None) or default_mime
             )
-        else:
-            raise ValueError(
-                "Unsupported image input type. Provide a path, bytes, file-like "
-                "object, data URL, HTTP(S) URL, or a pre-built image payload."
-            )
+            return data, mime_type
 
+        raise ValueError(
+            "Unsupported image input type. Provide a path, bytes, file-like "
+            "object, data URL, HTTP(S) URL, or a pre-built image payload."
+        )
+
+    def _create_base64_image_url(
+        self, data, mime_type: str, default_mime: str
+    ) -> Dict[str, Any]:
+        """Create a base64 encoded image URL payload."""
         if data is None:
             raise ValueError("Image data could not be read.")
 
@@ -320,9 +341,7 @@ class PuterAI:
 
         return {
             "type": "image_url",
-            "image_url": {
-                "url": f"data:{mime};base64,{encoded}",
-            },
+            "image_url": {"url": f"data:{mime};base64,{encoded}"},
         }
 
     def _build_user_content(
@@ -333,15 +352,27 @@ class PuterAI:
     ) -> Union[str, List[Dict[str, Any]]]:
         """Construct the content payload for a user message."""
         if content_parts is not None:
-            if not content_parts:
-                raise ValueError("content_parts cannot be empty.")
-            return [copy.deepcopy(part) for part in content_parts]
+            return self._handle_custom_content_parts(content_parts)
 
+        parts = self._build_content_parts(prompt, images)
+        return self._optimize_content_parts(parts)
+
+    def _handle_custom_content_parts(
+        self, content_parts: Sequence[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
+        """Handle custom content parts input."""
+        if not content_parts:
+            raise ValueError("content_parts cannot be empty.")
+        return [copy.deepcopy(part) for part in content_parts]
+
+    def _build_content_parts(
+        self, prompt: Optional[str], images: Optional[Sequence[ImageInputType]]
+    ) -> List[Dict[str, Any]]:
+        """Build content parts from prompt and images."""
         parts: List[Dict[str, Any]] = []
-        text = "" if prompt is None else str(prompt)
 
-        if text:
-            parts.append({"type": "text", "text": text})
+        if prompt:
+            parts.append({"type": "text", "text": str(prompt)})
 
         if images:
             for image in images:
@@ -353,9 +384,14 @@ class PuterAI:
                 "sending a message."
             )
 
+        return parts
+
+    def _optimize_content_parts(
+        self, parts: List[Dict[str, Any]]
+    ) -> Union[str, List[Dict[str, Any]]]:
+        """Optimize content parts - return string if only single text part."""
         if len(parts) == 1 and parts[0].get("type") == "text":
             return parts[0]["text"]
-
         return parts
 
     def _build_user_message(
