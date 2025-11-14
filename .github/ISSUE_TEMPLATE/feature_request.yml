@@ -1,0 +1,152 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement for the Puter Python SDK
+title: "[FEATURE] "
+labels: ["enhancement", "triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to suggest a new feature!
+        Your ideas help make the Puter Python SDK better for everyone.
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Pre-submission Checklist
+      description: Please verify these items before submitting
+      options:
+        - label: I have searched existing issues to ensure this isn't a duplicate
+          required: true
+        - label: I have read the documentation to confirm this feature doesn't already exist
+          required: true
+        - label: This feature request is specific to the Puter Python SDK (not the underlying Puter.js API)
+          required: true
+
+  - type: textarea
+    id: feature-summary
+    attributes:
+      label: Feature Summary
+      description: A brief summary of the feature you'd like to see
+      placeholder: Briefly describe the feature you'd like...
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve?
+      placeholder: |
+        Describe the problem or limitation you're facing...
+
+        Example: "Currently, there's no way to..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: Describe your ideal solution
+      placeholder: |
+        Describe how you think this feature should work...
+
+        Example: "I would like to be able to..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternative-solutions
+    attributes:
+      label: Alternative Solutions
+      description: Describe any alternative solutions or workarounds you've considered
+      placeholder: |
+        Describe any alternative approaches you've thought of...
+
+        Example: "I've tried..., but it doesn't work because..."
+
+  - type: dropdown
+    id: feature-type
+    attributes:
+      label: Feature Type
+      description: What type of feature is this?
+      options:
+        - New API method/function
+        - Enhancement to existing functionality
+        - Developer experience improvement
+        - Performance optimization
+        - Documentation improvement
+        - Example/tutorial addition
+        - Testing improvement
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Low - Nice to have
+        - Medium - Would be helpful
+        - High - Important for my use case
+        - Critical - Blocking my project
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: Use Cases
+      description: Describe specific use cases where this feature would be helpful
+      placeholder: |
+        1. When developing chatbots, I need to...
+        2. For data analysis projects, it would help to...
+        3. In production environments, this would allow...
+
+  - type: textarea
+    id: api-design
+    attributes:
+      label: Proposed API Design
+      description: If applicable, suggest how the API should look
+      render: python
+      placeholder: |
+        # Example of how you envision the feature working
+
+        client = PuterAI(username="...", password="...")
+        result = client.new_feature_method(parameter="value")
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: What would need to be true for this feature to be considered complete?
+      placeholder: |
+        - [ ] Feature works as described
+        - [ ] Documentation is updated
+        - [ ] Tests are added
+        - [ ] Examples are provided
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context, screenshots, or examples about the feature request
+      placeholder: Any additional information that might be helpful...
+
+  - type: dropdown
+    id: contribution-willingness
+    attributes:
+      label: Contribution
+      description: Would you be willing to help implement this feature?
+      options:
+        - Yes, I can implement this feature
+        - Yes, I can help with testing
+        - Yes, I can help with documentation
+        - Maybe, depending on complexity
+        - No, I'm just suggesting the idea
+    validations:
+      required: true
