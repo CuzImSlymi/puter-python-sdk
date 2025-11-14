@@ -169,7 +169,6 @@ class TestPuterAIChat:
         tmp_path,
     ):
         """Ensure images are attached as data URLs when using file paths."""
-
         image_bytes = b"\x89PNG\r\n\x1a\nmockdata"
         image_path = tmp_path / "sample.png"
         image_path.write_bytes(image_bytes)
@@ -204,7 +203,6 @@ class TestPuterAIChat:
         sample_chat_response,
     ):
         """Allow passing fully custom content structures."""
-
         mock_response = Mock()
         mock_response.json.return_value = sample_chat_response
         mock_response.raise_for_status.return_value = None

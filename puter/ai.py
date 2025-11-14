@@ -8,7 +8,7 @@ import mimetypes
 import os
 import time
 from pathlib import Path
-from typing import Any, Dict, IO, List, Optional, Sequence, Tuple, Union
+from typing import IO, Any, Dict, List, Optional, Sequence, Tuple, Union
 from urllib.parse import urlparse
 
 import aiohttp
@@ -17,7 +17,6 @@ from asyncio_throttle import Throttler
 
 from .config import config
 from .exceptions import PuterAPIError, PuterAuthError
-
 
 ImageInputType = Union[
     str,
@@ -255,15 +254,12 @@ class PuterAI:
         default_mime: str = "image/png",
     ) -> Dict[str, Any]:
         """Convert various image inputs into the API-compatible payload."""
-
         source = image
         explicit_mime: Optional[str] = None
 
         if isinstance(image, tuple):
             if len(image) != 2:
-                raise ValueError(
-                    "Tuple image inputs must be (image_data, mime_type)."
-                )
+                raise ValueError("Tuple image inputs must be (image_data, mime_type).")
             source, explicit_mime = image
 
         if isinstance(source, dict):
@@ -289,23 +285,23 @@ class PuterAI:
                 raise ValueError(f"Image file not found: {path_str}")
             data = file_path.read_bytes()
             mime_type = (
-                explicit_mime
-                or mimetypes.guess_type(path_str)[0]
-                or default_mime
+                explicit_mime or mimetypes.guess_type(path_str)[0] or default_mime
             )
         elif isinstance(source, bytes):
             data = source
             mime_type = explicit_mime or default_mime
-        elif hasattr(source, "read"):
-            raw = source.read()
+        elif hasattr(source, "read") and not isinstance(
+            source, (str, bytes, os.PathLike, tuple)
+        ):
+            # Type narrowing: source is IO[bytes] at this point
+            file_obj = source  # type: IO[bytes]
+            raw = file_obj.read()
             if isinstance(raw, str):
                 data = raw.encode("utf-8")
             else:
                 data = raw
             mime_type = (
-                explicit_mime
-                or getattr(source, "mimetype", None)
-                or default_mime
+                explicit_mime or getattr(source, "mimetype", None) or default_mime
             )
         else:
             raise ValueError(
@@ -336,7 +332,6 @@ class PuterAI:
         content_parts: Optional[Sequence[Dict[str, Any]]],
     ) -> Union[str, List[Dict[str, Any]]]:
         """Construct the content payload for a user message."""
-
         if content_parts is not None:
             if not content_parts:
                 raise ValueError("content_parts cannot be empty.")
@@ -370,7 +365,6 @@ class PuterAI:
         content_parts: Optional[Sequence[Dict[str, Any]]],
     ) -> Dict[str, Any]:
         """Create the user message dictionary for the API payload."""
-
         content = self._build_user_content(prompt, images, content_parts)
         return {"role": "user", "content": content}
 
