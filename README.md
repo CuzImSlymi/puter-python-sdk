@@ -1,6 +1,10 @@
 # Puter Python SDK
 
+> [!WARNING]
+> Puter.js seems to have heavily reduced usage limits on free/starter tiers. High-end models may quickly return `402 Client Error: Payment Required`.
+
 A lightweight Python SDK for interacting with Puter.js AI chat completion services.
+
 
 ## Features
 
